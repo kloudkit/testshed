@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "testshed"
+description = "🧪 The support crew for your test bench"
+requires-python = ">=3.11"
+authors = [{ name = "Dov Benyomin Sohacheski", email = "b@kloud.email" }]
+license = { text = "MIT" }
+keywords = ["testing", "test-utils", "fixtures"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+dependencies = [
+  "pytest>=8.4.1",
+  "python-on-whales>=0.78.0",
+  "PyYAML>=6.0.2",
+  "requests>=2.32.4",
+]
+dynamic = ["readme", "version"]
+
+[project.urls]
+"Homepage" = "https://github.com/kloudkit/testshed"
+"Bug Tracker" = "https://github.com/kloudkit/testshed/issues"
+"Source Code" = "https://github.com/kloudkit/testshed"
+
+[project.optional-dependencies]
+dev = ["pre-commit>=4.2.0", "ruff>=0.12.0"]
+
+[tool.setuptools]
+package-dir = { "kloudkit.testshed" = "src" }
+
+[tool.setuptools.dynamic]
+readme = { file = ["README.md"] }
+version = { attr = "kloudkit.testshed.__version__" }
+
+[tool.coverage.report]
+exclude_lines = ["@(abc\\.)?abstractmethod", "# pragma: no cover"]
