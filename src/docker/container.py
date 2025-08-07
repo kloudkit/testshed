@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from python_on_whales import Container as NativeContainer, docker
-
 from kloudkit.testshed.docker.file import FileReader
+from python_on_whales import Container as NativeContainer, docker
 
 
 class Container:
