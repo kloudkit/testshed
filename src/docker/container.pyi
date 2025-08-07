@@ -1,0 +1,3 @@
+from python_on_whales import Container as NativeContainer
+
+class Container(NativeContainer): ...
