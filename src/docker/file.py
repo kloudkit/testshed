@@ -13,7 +13,9 @@ class FileReader:
   def exists(self, path: str | Path) -> bool:
     """Check if a file or directory exists."""
 
-    result = self._container.execute(f"test -e {path} && echo yes || echo no")
+    result = self._container.execute(
+      ["test", "-e", path, "&&", "echo", "yes", "||", "echo", "no"]
+    )
 
     return "yes" in result
 
