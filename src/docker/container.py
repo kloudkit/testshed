@@ -1,15 +1,24 @@
 from pathlib import Path
+from typing import Iterable
 
-from kloudkit.testshed.docker.file import FileReader
 from python_on_whales import Container as NativeContainer, docker
 
+from kloudkit.testshed.docker.error_handler import error_handler
+from kloudkit.testshed.docker.file import FileReader
+from kloudkit.testshed.utils.models import Wrapper
 
-class Container:
-  def __init__(self, container: NativeContainer):
-    self._container = container
 
-  def __getattr__(self, name):
-    return getattr(self._container, name)
+class Container(Wrapper[NativeContainer]):
+  @error_handler
+  def execute(
+    self,
+    *args,
+    raises=False,
+    **kwargs,
+  ) -> Iterable[tuple[str, bytes]] | str | None:
+    """Wrap execution in `try/except`."""
+
+    return self._wrapped.execute(*args, **kwargs)
 
   def ip(self) -> str:
     """Retrieve internal IP address of container."""
@@ -22,7 +31,7 @@ class Container:
 
     return FileReader(self)
 
-  def listdir(self, path: str | Path, *, hidden=False) -> tuple[str]:
+  def listdir(self, path: str | Path, *, hidden=False) -> tuple[str, ...]:
     """Retrieve directory listing for a given path."""
 
     flags = "-1"

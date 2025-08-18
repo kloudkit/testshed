@@ -4,6 +4,7 @@ from pathlib import Path
 
 import yaml
 from python_on_whales import docker
+from kloudkit.testshed.docker.error_handler import error_handler
 
 
 class FileReader:
@@ -34,6 +35,7 @@ class FileReader:
 
     return self.bytes(path).decode("utf-8")
 
+  @error_handler
   def bytes(self, path: str | Path) -> bytes:
     """Retrieve the content of a file as bytes."""
 

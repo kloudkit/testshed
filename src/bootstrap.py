@@ -5,11 +5,10 @@ from python_on_whales import docker
 import pytest
 
 
-def init_shed_network(network: str):
+def init_shed_network(network: str) -> None:
   """Ensure the required Docker network exists."""
 
   if not docker.network.exists(network):
-    print(f"Docker network [{network}] not found, creating it")
     docker.network.create(network)
 
 
@@ -19,7 +18,7 @@ def init_shed_image(
   require_local_image: bool,
   force_build: bool,
   context_path: Path,
-):
+) -> None:
   """Build the Docker image when missing or rebuild is forced."""
 
   image_missing = not docker.image.exists(image)

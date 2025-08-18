@@ -2,13 +2,13 @@ import time
 from typing import TYPE_CHECKING
 
 from kloudkit.testshed.docker.container import Container
-from python_on_whales.exceptions import DockerException, NoSuchContainer
+from python_on_whales.exceptions import DockerException
 
 import pytest
 
 
 if TYPE_CHECKING:
-  from kloudkit.testshed.docker.probes import Probe
+  from kloudkit.testshed.docker.probe import Probe
 
 
 class ReadinessProbe:
@@ -42,12 +42,9 @@ class ReadinessProbe:
 
     while time.time() < deadline:
       try:
-        self._container.execute(self.command)
+        self._container.execute(self.command, raises=True)
 
         return
-      except NoSuchContainer:
-        failure_message = "Container exited unexpectedly before the timeout"
-        break
       except DockerException:
         time.sleep(0.1)
 
