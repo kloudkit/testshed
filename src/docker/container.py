@@ -1,15 +1,18 @@
-from pathlib import Path
-
-from kloudkit.testshed.docker.file import FileReader
 from python_on_whales import Container as NativeContainer, docker
 
+from kloudkit.testshed.core.wrapper import Wrapper
+from kloudkit.testshed.docker.runtime.file_system import FileSystem
+from kloudkit.testshed.docker.runtime.shell import Shell
 
-class Container:
-  def __init__(self, container: NativeContainer):
-    self._container = container
 
-  def __getattr__(self, name):
-    return getattr(self._container, name)
+class Container(Wrapper[NativeContainer]):
+  BASH_PATH = "/bin/bash"
+  SH_PATH = "/bin/sh"
+  ZSH_PATH = "/usr/bin/zsh"
+
+  LOGIN_SHELL = False
+  DEFAULT_USER = None
+  DEFAULT_SHELL = None
 
   def ip(self) -> str:
     """Retrieve internal IP address of container."""
@@ -17,20 +20,24 @@ class Container:
     return self.execute(["hostname", "-i"])
 
   @property
-  def file(self) -> FileReader:
-    """Higher order file reader."""
+  def fs(self) -> FileSystem:
+    """Higher order file system."""
 
-    return FileReader(self)
+    return FileSystem(self)
 
-  def listdir(self, path: str | Path, *, hidden=False) -> tuple[str]:
-    """Retrieve directory listing for a given path."""
+  @property
+  def execute(self) -> Shell:
+    """Higher order execution."""
 
-    flags = "-1"
-
-    if hidden:
-      flags = f"{flags}a"
-
-    return tuple(self.execute(["\\ls", flags, str(path)]).splitlines())
+    return Shell(
+      self._wrapped,
+      bash_path=self.BASH_PATH,
+      sh_path=self.SH_PATH,
+      zsh_path=self.ZSH_PATH,
+      user=self.DEFAULT_USER,
+      shell=self.DEFAULT_SHELL,
+      login_shell=self.LOGIN_SHELL,
+    )
 
   @classmethod
   def run(cls, *args, **kwargs):

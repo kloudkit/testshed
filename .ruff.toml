@@ -1,0 +1,93 @@
+cache-dir = "~/.cache/ruff"
+
+fix = true
+extend-exclude = [".eggs"]
+indent-width = 2
+line-length = 80
+target-version = "py311"
+
+[format]
+docstring-code-format = true
+line-ending = "lf"
+
+[lint]
+ignore = [
+  "D100", # missing docstring in public module
+  "D101", # missing docstring in public class
+  "D104", # missing docstring in public package
+  "D105", # missing docstring in magic method
+  "D107", # missing docstring in __init__
+  "D202", # blank lines after function docstring
+  "D203", # blank line required before class docstring
+  "D212", # multi line summary first line
+  "E111", # indentation is not a multiple of 4
+  "E114", # indentation is not a multiple of 4
+]
+
+select = [
+  "A",      # flake8-builtins (avoid shadowing built-ins)
+  "ASYNC",  # flake8-async
+  "B004",   # use of hasattr(x, "__call__")
+  "B006",   # mutable default argument
+  "B007",   # unused loop variable
+  "B017",   # broad exception in pytest.raises
+  "B019",   # method cached with lru_cache can leak
+  "B028",   # missing stacklevel in warning
+  "D",      # pydocstyle
+  "E",      # pycodestyle errors
+  "F",      # pyflakes
+  "G",      # flake8-logging-format
+  "I",      # isort
+  "ISC",    # implicit string concatenation
+  "LOG",    # flake8-logging
+  "N",      # pep8-naming
+  "PT",     # flake8-pytest-style
+  "Q",      # flake8-quotes
+  "RET505", # unnecessary branch after return
+  "RET506", # unnecessary branch after raise
+  "RET507", # unnecessary branch after continue
+  "RET508", # unnecessary branch after break
+  "RUF006", # asyncio dangling task
+  "RUF015", # unnecessary iterable allocation for first element
+  "RUF019", # unnecessary key check
+  "RUF100", # unused noqa
+  "SIM105", # prefer contextlib.suppress(...) to try-except-pass
+  "SIM300", # constant on left side of comparison
+  "TC",     # type-checking blocks
+  "TID25",  # flake8-tidy-imports
+  "TRY002", # prohibit `raise Exception`; use specific exceptions
+  "W",      # pycodestyle warnings
+]
+
+[lint.flake8-pytest-style]
+mark-parentheses = false
+fixture-parentheses = false
+
+[lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[lint.flake8-type-checking]
+exempt-modules = ["typing", "typing_extensions"]
+
+[lint.isort]
+combine-as-imports = true
+lines-after-imports = 2
+known-first-party = ["kloudkit.testshed"]
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "local-folder",
+  "testing",
+]
+
+[lint.isort.sections]
+testing = ["pytest", "hypothesis", "tests"]
+
+[lint.pep8-naming]
+classmethod-decorators = ["pydantic.validator"]
+
+[lint.per-file-ignores]
+"**/tests/**" = ["D"]
+"**/test/**" = ["D"]

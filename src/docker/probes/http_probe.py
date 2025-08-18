@@ -1,15 +1,18 @@
 from dataclasses import asdict, dataclass, replace
+from typing import Self
 
 
 @dataclass(slots=True)
-class Probe:
+class HttpProbe:
   host: str = "http://localhost"
   port: int | None = None
   endpoint: str | None = None
   command: str = "curl"
   timeout: float = 30.0
 
-  def merge(self, other: "Probe", *, ignore_none: bool = True) -> "Probe":
+  def merge(
+    self, other: "HttpProbe", *, ignore_none: bool = True
+  ) -> Self:
     """Merge two Probes."""
 
     if not ignore_none:

@@ -5,15 +5,15 @@ from pathlib import Path
 import yaml
 from python_on_whales import docker
 
+from kloudkit.testshed.core.wrapper import Wrapper
+from kloudkit.testshed.docker.runtime.error_handler import error_handler
 
-class FileReader:
-  def __init__(self, container):
-    self._container = container
 
+class FileSystem(Wrapper["Container"]):
   def exists(self, path: str | Path) -> bool:
     """Check if a file or directory exists."""
 
-    result = self._container.execute(
+    result = self._wrapped.execute(
       ["test", "-e", path, "&&", "echo", "yes", "||", "echo", "no"]
     )
 
@@ -34,13 +34,27 @@ class FileReader:
 
     return self.bytes(path).decode("utf-8")
 
+  @error_handler
   def bytes(self, path: str | Path) -> bytes:
     """Retrieve the content of a file as bytes."""
 
     with tempfile.NamedTemporaryFile(delete=True) as tmp_file:
-      docker.copy((self._container.id, path), tmp_file.name)
+      docker.copy((self._wrapped.id, path), tmp_file.name)
 
       return Path(tmp_file.name).read_bytes()
+
+  @error_handler
+  def ls(self, path: str | Path, *, hidden=False) -> tuple[str, ...]:
+    """Retrieve directory listing for a given path."""
+
+    flags = "-1"
+
+    if hidden:
+      flags = f"{flags}a"
+
+    return tuple(
+      self._wrapped.execute(["\\ls", flags, str(path)]).splitlines()
+    )
 
   def __call__(self, path: str | Path) -> str:
     """Retrieve the content of a file for a given path."""

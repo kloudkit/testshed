@@ -8,7 +8,7 @@ description = "🧪 The support crew for your test bench"
 requires-python = ">=3.11"
 authors = [{ name = "Dov Benyomin Sohacheski", email = "b@kloud.email" }]
 license = { text = "MIT" }
-keywords = ["testing", "test-utils", "fixtures"]
+keywords = ["pytest", "docker", "fixtures", "playwright", "testing"]
 classifiers = [
   "Framework :: Pytest",
   "License :: OSI Approved :: MIT License",
