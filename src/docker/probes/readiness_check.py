@@ -1,20 +1,17 @@
 import time
-from typing import TYPE_CHECKING
+
+from python_on_whales.exceptions import DockerException
 
 from kloudkit.testshed.docker.container import Container
-from python_on_whales.exceptions import DockerException, NoSuchContainer
+from kloudkit.testshed.docker.probes.http_probe import HttpProbe
 
 import pytest
 
 
-if TYPE_CHECKING:
-  from kloudkit.testshed.docker.probes import Probe
-
-
-class ReadinessProbe:
-  def __init__(self, container: Container, probe: "Probe"):
+class ReadinessCheck:
+  def __init__(self, container: Container, probe: HttpProbe):
     self._container: Container = container
-    self._probe: "Probe" = probe
+    self._probe: HttpProbe = probe
 
   @property
   def url(self) -> str:
@@ -42,12 +39,9 @@ class ReadinessProbe:
 
     while time.time() < deadline:
       try:
-        self._container.execute(self.command)
+        self._container.execute(self.command, raises=True)
 
         return
-      except NoSuchContainer:
-        failure_message = "Container exited unexpectedly before the timeout"
-        break
       except DockerException:
         time.sleep(0.1)
 

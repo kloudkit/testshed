@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass(slots=True)
@@ -9,7 +10,9 @@ class Options:
   network: str = "testshed-network"
   image: str | None = None
   tag: str = "tests"
-  stubs_dir: str = "stubs"
+  src_path: Path | None = None
+  tests_path: Path | None = None
+  stubs_path: Path | None = None
 
   @property
   def image_and_tag(self) -> str:

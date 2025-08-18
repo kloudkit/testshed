@@ -1,9 +1,10 @@
 import contextlib
 
+from python_on_whales import docker
+from python_on_whales.exceptions import DockerException
+
 from kloudkit.testshed._internal.state import get_state
 from kloudkit.testshed.docker.container import Container
-from python_on_whales import docker
-from python_on_whales.exceptions import NoSuchContainer
 
 
 class Cleanup:
@@ -15,9 +16,9 @@ class Cleanup:
   ) -> None:
     """Force-remove all provided containers or labeled."""
 
-    labels = labels or get_state().labels
+    if containers is None:
+      labels = labels or get_state().labels
 
-    if not containers:
       key, value = next(iter(labels.items()))
 
       containers = docker.container.list(
@@ -25,5 +26,5 @@ class Cleanup:
       )
 
     for container in containers:
-      with contextlib.suppress(NoSuchContainer):
+      with contextlib.suppress(DockerException):
         container.remove(force=True, volumes=True)

@@ -23,10 +23,10 @@ def semver(version: str, fallback: int | str = 0) -> Version:
   match = _SEMVER_RE.search(version)
 
   if not version:
-    pytest.fail("No version provided", pytest=False)
+    pytest.fail("No version provided", pytrace=False)
 
   if not match:
-    pytest.fail(f"No version pattern found in: {version!r}", pytest=False)
+    pytest.fail(f"No version pattern found in: {version!r}", pytrace=False)
 
   return Version(
     f"{match['major']}.{match['minor']}.{match['patch'] or fallback}"

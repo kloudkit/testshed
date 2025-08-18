@@ -1,6 +1,10 @@
 from importlib.metadata import version
 
-from kloudkit.testshed.docker import Container, Factory as DockerFactory, Probe
+from kloudkit.testshed.docker import (
+  Container,
+  Factory as DockerFactory,
+  HttpProbe,
+)
 from kloudkit.testshed.utils.network import available_port
 
 
@@ -25,5 +29,5 @@ class Factory(DockerFactory):
           f" run-server --port {internal_port} --host 0.0.0.0"
         ),
       ],
-      probe=Probe(port=internal_port),
+      probe=HttpProbe(port=internal_port),
     )
