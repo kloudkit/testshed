@@ -1,8 +1,19 @@
 from pathlib import Path
+from typing import Literal
 
 from python_on_whales import docker
 
 import pytest
+
+
+def _build(image: str, context_path: Path) -> None:
+  print(f"Building image [{image}]")
+  docker.build(
+    context_path=context_path,
+    pull=True,
+    progress="plain",
+    tags=image,
+  )
 
 
 def init_shed_network(network: str) -> None:
@@ -15,27 +26,36 @@ def init_shed_network(network: str) -> None:
 def init_shed_image(
   image: str,
   *,
-  require_local_image: bool,
-  force_build: bool,
+  policy: Literal["pull", "build", "require", "rebuild"],
   context_path: Path,
 ) -> None:
-  """Build the Docker image when missing or rebuild is forced."""
+  """Acquire the Docker image based on the specified policy."""
 
-  image_missing = not docker.image.exists(image)
+  image_exists = docker.image.exists(image)
 
-  if image_missing and require_local_image:
-    pytest.exit(f"Required image [{image}] not found. Aborting")
+  if policy == "require":
+    if not image_exists:
+      raise pytest.UsageError(f"Required image [{image}] not found.")
+    return
 
-  if image_missing:
+  if policy == "build":
+    if not image_exists:
+      _build(image, context_path)
+    return
+
+  if policy == "rebuild":
+    _build(image, context_path)
+    return
+
+  if image_exists:
+    return
+
+  try:
     print(f"Testing image [{image}] not found")
-    force_build = True
+    print(f"Attempting to pull image [{image}]")
+    docker.pull(image)
+    return
+  except Exception as e:
+    print(f"Pull failed ({e}]")
 
-  if force_build:
-    print(f"Forcing build of test image [{image}]")
-
-    docker.build(
-      context_path=context_path,
-      pull=True,
-      progress="plain",
-      tags=image,
-    )
+  _build(image, context_path)

@@ -36,17 +36,12 @@ def pytest_addoption(parser: pytest.Parser) -> None:
   )
 
   parser.addoption(
-    "--shed-require-local-image",
-    action="store_true",
-    default=False,
-    help="Fail if the image is not present locally (no build or pull).",
-  )
-
-  parser.addoption(
-    "--shed-rebuild",
-    action="store_true",
-    default=False,
-    help="Force a rebuild of the test image (ignores existing local image).",
+    "--shed-image-policy",
+    action="store",
+    choices=["pull", "build", "require", "rebuild"],
+    default="pull",
+    metavar="POLICY",
+    help="Image acquisition policy for building or pulling.",
   )
 
   parser.addoption(

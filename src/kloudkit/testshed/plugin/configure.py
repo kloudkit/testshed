@@ -60,7 +60,6 @@ def pytest_configure(config: pytest.Config) -> None:
 
   init_shed_image(
     state.image_and_tag,
-    force_build=config.getoption("shed_rebuild"),
-    require_local_image=config.getoption("shed_require_local_image"),
+    policy=config.getoption("shed_image_policy"),
     context_path=context_path,
   )

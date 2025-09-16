@@ -19,6 +19,23 @@ pip install testshed
 
 ## Usage
 
+### Fixture Imports
+
+Fixtures are located in `kloudkit.testshed.fixtures` and can be imported:
+
+**All fixtures at once:**
+
+```python
+from kloudkit.testshed.fixtures import *  # noqa: F403
+```
+
+**Individual fixtures (opt-in):**
+
+```python
+from kloudkit.testshed.fixtures.docker import *  # noqa: F403
+# ...
+```
+
 ### Docker container testing
 
 TestShed provides fixtures to manage containers inside your tests.
@@ -122,25 +139,33 @@ def test_example_website(playwright_browser):
 
 TestShed extends `pytest` with options to control the Docker environment:
 
-- `--shed`: Enable TestShed for the current test suite *(default: disabled)*.
-- `--shed-image IMAGE`: Base image *(e.g., `ghcr.io/acme/app`)*.
-- `--shed-tag TAG|SHA`: Image tag or digest *(default: `tests`)*.
-- `--shed-build-context DIR`: Docker build context *(default: `pytest.ini` directory)*.
-- `--shed-require-local-image`: Fail if image isn’t present locally *(no build/pull)*.
-- `--shed-rebuild`: Force rebuilding the test image.
-- `--shed-network NAME`: Docker network *(default: `testshed-network`)*.
-- `--shed-skip-bootstrap`: Skip Docker bootstrapping *(useful for unit tests)*.
+- **`--shed`:** Enable TestShed for the current test suite *(default: disabled)*.
+- **`--shed-image IMAGE`:** Base image *(e.g., `ghcr.io/acme/app`)*.
+- **`--shed-tag TAG|SHA`:** Image tag or digest *(default: `tests`)*.
+- **`--shed-build-context DIR`:** Docker build context *(default: `pytest.ini` directory)*.
+- **`--shed-image-policy POLICY`:** Image acquisition policy for building or pulling *(default: `pull`)*.
+- **`--shed-network NAME`:** Docker network *(default: `testshed-network`)*.
+- **`--shed-skip-bootstrap`:** Skip Docker bootstrapping *(useful for unit tests)*.
 
 > [!NOTE]
 > When TestShed is installed globally, you must explicitly enable it per suite with
 > `--shed`.
-> This prevents it from configuring Docker in projects that don’t use it.
+> This prevents it from configuring Docker in projects that don't use it.
+
+#### Image Policies
+
+The `--shed-image-policy` option controls how TestShed acquires Docker images:
+
+- **`pull`** *(default)***:** Pull image if not found locally, build as fallback.
+- **`build`:** Build only if image doesn't exist locally.
+- **`require`:** Require existing local image *(fails if not found)*.
+- **`rebuild`:** Always rebuild the image.
 
 #### Examples
 
 ```bash
 # Enable TestShed for your suite
-pytest --shed --shed-image my-test-image --shed-rebuild
+pytest --shed --shed-image my-test-image --shed-image-policy rebuild
 
 # Run tests without TestShed (default)
 pytest

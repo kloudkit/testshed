@@ -7,6 +7,11 @@ from kloudkit.testshed.docker.runtime.error_handler import error_handler
 
 
 class Shell(Wrapper[NativeContainer]):
+  def _get(self, name: str, default=None):
+    """Get argument with fallback to default."""
+
+    return getattr(self._args, name, default)
+
   @error_handler
   def _execute(
     self,
@@ -20,15 +25,15 @@ class Shell(Wrapper[NativeContainer]):
 
     flags = (
       "-cli"
-      if (login_shell if login_shell is not None else self._args.login_shell)
+      if (
+        login_shell
+        if login_shell is not None
+        else self._get("login_shell", False)
+      )
       else "-c"
     )
 
-    user = kwargs.pop("user", self._args.user)
-
-    shell = shell or (
-      self._args.shell if self._args.shell is not None else None
-    )
+    shell = shell or self._get("shell")
 
     if shell:
       if not isinstance(command, str):
@@ -36,7 +41,9 @@ class Shell(Wrapper[NativeContainer]):
 
       command = [shell, flags, command]
 
-    return self._wrapped.execute(command, user=user, **kwargs)
+    return self._wrapped.execute(
+      command, user=kwargs.pop("user", self._get("user")), **kwargs
+    )
 
   def bash(
     self,
@@ -45,7 +52,7 @@ class Shell(Wrapper[NativeContainer]):
   ) -> Iterable[tuple[str, bytes]] | str | None:
     """Execute commands using `bash` shell."""
 
-    return self._execute(command, shell=self._args.bash_path, **kwargs)
+    return self._execute(command, shell=self._get("bash_path"), **kwargs)
 
   def zsh(
     self,
@@ -54,7 +61,7 @@ class Shell(Wrapper[NativeContainer]):
   ) -> Iterable[tuple[str, bytes]] | str | None:
     """Execute commands using `zsh` shell."""
 
-    return self._execute(command, shell=self._args.zsh_path, **kwargs)
+    return self._execute(command, shell=self._get("zsh_path"), **kwargs)
 
   def sh(
     self,
@@ -63,7 +70,7 @@ class Shell(Wrapper[NativeContainer]):
   ) -> Iterable[tuple[str, bytes]] | str | None:
     """Execute commands using `sh` shell."""
 
-    return self._execute(command, shell=self._args.sh_path, **kwargs)
+    return self._execute(command, shell=self._get("sh_path"), **kwargs)
 
   def __call__(
     self,
@@ -72,4 +79,8 @@ class Shell(Wrapper[NativeContainer]):
   ) -> Iterable[tuple[str, bytes]] | str | None:
     """Execute using the native method."""
 
-    return self._execute(command, **kwargs)
+    default_shell = (
+      self._get("sh_path") if self._get("shell") is None else self._get("shell")
+    )
+
+    return self._execute(command, shell=default_shell, **kwargs)
