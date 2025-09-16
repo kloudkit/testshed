@@ -41,7 +41,7 @@ testshed = "kloudkit.testshed.plugin"
 package-dir = { "kloudkit.testshed" = "src" }
 
 [tool.setuptools.dynamic]
-readme = { file = ["README.md"] }
+readme = { file = ["README.md"], content-type = "text/markdown" }
 version = { attr = "kloudkit.testshed.__version__" }
 
 [tool.coverage.report]
