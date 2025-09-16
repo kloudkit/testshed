@@ -8,9 +8,6 @@ from kloudkit.testshed.plugin.presenter import (
 import pytest
 
 
-pytest_plugins = ["kloudkit.testshed.fixtures"]
-
-
 def pytest_keyboard_interrupt(excinfo: pytest.ExceptionInfo) -> None:
   """Cleanup any dangling containers before exiting."""
 

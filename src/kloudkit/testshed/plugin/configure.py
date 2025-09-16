@@ -2,6 +2,7 @@ from pathlib import Path
 
 from kloudkit.testshed._internal.state import get_state
 from kloudkit.testshed.core.bootstrap import init_shed_image, init_shed_network
+from kloudkit.testshed.plugin.validation import validate_config
 
 import pytest
 
@@ -33,10 +34,12 @@ def _addinivalue_line(config: pytest.Config) -> None:
 def pytest_configure(config: pytest.Config) -> None:
   """Bootstrap Docker image and network used in tests."""
 
+  _addinivalue_line(config)
+
   if not config.getoption("shed"):
     return
 
-  _addinivalue_line(config)
+  validate_config(config)
 
   state = get_state()
 

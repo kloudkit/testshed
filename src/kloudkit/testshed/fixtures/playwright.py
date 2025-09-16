@@ -1,8 +1,9 @@
 from typing import Generator
 
+from playwright.sync_api import Browser, sync_playwright
+
 from kloudkit.testshed.playwright import Factory
 from kloudkit.testshed.utils.network import available_port
-from playwright.sync_api import Browser, sync_playwright
 
 import pytest
 
