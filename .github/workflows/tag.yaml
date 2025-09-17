@@ -1,0 +1,44 @@
+---
+name: 🔖 Publish New Tag
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - src/kloudkit/testshed/__init__.py
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.KLOUD_BOT_ORG_PAT }}
+
+      - name: 🔢 Extract version from __init__.py
+        id: extract_version
+        run: |
+          VERSION=$(grep -oP '__version__ = "\K[^"]+' src/kloudkit/testshed/__init__.py)
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: 🧪 Check if tag exists
+        id: check_tag
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION"; then
+            echo "Tag v$VERSION already exists on origin. Skipping."
+            exit 0
+          fi
+
+      - name: 🔖 Create and push tag
+        run: |
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+        env:
+          GITHUB_TOKEN: ${{ secrets.KLOUD_BOT_ORG_PAT }}
+          GITHUB_REF: refs/tags/v$VERSION
+          GITHUB_REPOSITORY: ${{ github.repository }}

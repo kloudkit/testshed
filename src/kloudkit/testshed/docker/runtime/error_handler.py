@@ -1,4 +1,5 @@
 import functools
+import re
 from typing import Callable, ParamSpec, TypeVar
 
 from python_on_whales.exceptions import DockerException, NoSuchContainer
@@ -8,6 +9,21 @@ import pytest
 
 P = ParamSpec("P")
 T = TypeVar("T")
+
+
+def error_message(error: DockerException) -> str:
+  """Extract a clean, user-facing error message from DockerException."""
+
+  pattern = (
+    r"^OCI runtime exec failed:"
+    r" exec failed: unable to start container process: "
+  )
+
+  return (
+    (error.stderr or "").strip()
+    or re.sub(pattern, "", (error.stdout or "").strip())
+    or "Command failed"
+  )
 
 
 def error_handler(fn: Callable[P, T]) -> Callable[P, T]:
@@ -25,7 +41,7 @@ def error_handler(fn: Callable[P, T]) -> Callable[P, T]:
       if raises:
         raise
 
-      failure = str(error)
+      failure = error_message(error)
 
     if failure:
       pytest.fail(failure, pytrace=False)
