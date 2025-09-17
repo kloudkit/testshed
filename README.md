@@ -115,12 +115,11 @@ from kloudkit.testshed.docker import InlineVolume, RemoteVolume
 
 @shed_env(MY_ENV_VAR="hello")
 @shed_volumes(
-  ("/path/to/host/data", "/app/data:ro"),
+  ("/path/to/host/data", "/app/data"),
   InlineVolume("/app/config.txt", "any content you want", mode=0o644),
   RemoteVolume("/app/remote-config.json", "https://api.example.com/config.json", mode=0o644),
 )
-def test_configured_docker_app(docker_sidecar):
-  app = docker_sidecar("my-custom-app:latest")
+def test_configured_docker_app(shed):
   # ... test logic ...
 ```
 
@@ -145,7 +144,6 @@ TestShed extends `pytest` with options to control the Docker environment:
 - **`--shed-tag TAG|SHA`:** Image tag or digest *(default: `tests`)*.
 - **`--shed-build-context DIR`:** Docker build context *(default: `pytest.ini` directory)*.
 - **`--shed-image-policy POLICY`:** Image acquisition policy for building or pulling *(default: `pull`)*.
-- **`--shed-network NAME`:** Docker network *(default: `testshed-network`)*.
 - **`--shed-skip-bootstrap`:** Skip Docker bootstrapping *(useful for unit tests)*.
 
 > [!NOTE]

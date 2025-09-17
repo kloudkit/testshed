@@ -1,6 +1,9 @@
 from pathlib import Path
 
-from kloudkit.testshed._internal.state import get_state
+from kloudkit.testshed._internal.state import (
+  Options,
+  set_state,
+)
 from kloudkit.testshed.core.bootstrap import init_shed_image, init_shed_network
 from kloudkit.testshed.plugin.validation import validate_config
 
@@ -41,15 +44,16 @@ def pytest_configure(config: pytest.Config) -> None:
 
   validate_config(config)
 
-  state = get_state()
+  state = Options.create(
+    project_name=config.inipath.parent.name,
+    image=config.getoption("shed_image"),
+    tag=config.getoption("shed_tag"),
+    src_path=_resolve_path("src_dir", config),
+    stubs_path=_resolve_path("stubs_dir", config),
+    tests_path=_resolve_path("tests_dir", config),
+  )
 
-  state.network = config.getoption("shed_network")
-  state.image = config.getoption("shed_image")
-  state.tag = config.getoption("shed_tag")
-
-  state.src_path = _resolve_path("src_dir", config)
-  state.stubs_path = _resolve_path("stubs_dir", config)
-  state.tests_path = _resolve_path("tests_dir", config)
+  set_state(state)
 
   if config.getoption("shed_skip_bootstrap"):
     return

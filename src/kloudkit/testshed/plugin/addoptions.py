@@ -44,13 +44,6 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     help="Image acquisition policy for building or pulling.",
   )
 
-  parser.addoption(
-    "--shed-network",
-    action="store",
-    default="testshed-network",
-    metavar="NAME",
-    help="Docker network to use when running containers.",
-  )
 
   parser.addoption(
     "--shed-src-dir",

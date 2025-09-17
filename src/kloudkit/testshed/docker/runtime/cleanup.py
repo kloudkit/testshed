@@ -13,6 +13,7 @@ class Cleanup:
     cls,
     containers: list[Container] | None = None,
     labels: dict | None = None,
+    network: bool = False,
   ) -> None:
     """Force-remove all provided containers or labeled."""
 
@@ -28,3 +29,7 @@ class Cleanup:
     for container in containers:
       with contextlib.suppress(DockerException):
         container.remove(force=True, volumes=True)
+
+    if network:
+      with contextlib.suppress(DockerException):
+        docker.network.remove(get_state().network)

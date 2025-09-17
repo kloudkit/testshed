@@ -22,7 +22,7 @@ jobs:
 
       - name: 🔢 Extract version from __init__.py
         id: extract_version
-        run: |
+        run: |-
           VERSION=$(grep -oP '__version__ = "\K[^"]+' src/kloudkit/testshed/__init__.py)
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
