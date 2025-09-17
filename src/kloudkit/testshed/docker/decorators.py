@@ -1,4 +1,4 @@
-from kloudkit.testshed.docker.inline_volume import InlineVolume
+from kloudkit.testshed.docker.volumes.base_volume import BaseVolume
 
 import pytest
 
@@ -15,9 +15,7 @@ def shed_env(**envs) -> pytest.MarkDecorator:
   return pytest.mark.shed_env(**envs)
 
 
-def shed_volumes(
-  *mounts: tuple[str, str] | InlineVolume,
-) -> pytest.MarkDecorator:
+def shed_volumes(*mounts: tuple[str, str] | BaseVolume) -> pytest.MarkDecorator:
   """Assign volume mounts to the `shed` instance."""
 
   return pytest.mark.shed_volumes(*mounts)

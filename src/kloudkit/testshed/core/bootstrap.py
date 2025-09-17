@@ -33,29 +33,26 @@ def init_shed_image(
 
   image_exists = docker.image.exists(image)
 
-  if policy == "require":
-    if not image_exists:
-      raise pytest.UsageError(f"Required image [{image}] not found.")
-    return
+  match policy:
+    case "require":
+      if not image_exists:
+        raise pytest.UsageError(f"Required image [{image}] not found.")
 
-  if policy == "build":
-    if not image_exists:
+    case "build":
+      if not image_exists:
+        _build(image, context_path)
+
+    case "rebuild":
       _build(image, context_path)
-    return
 
-  if policy == "rebuild":
-    _build(image, context_path)
-    return
+    case "pull":
+      if image_exists:
+        return
 
-  if image_exists:
-    return
-
-  try:
-    print(f"Testing image [{image}] not found")
-    print(f"Attempting to pull image [{image}]")
-    docker.pull(image)
-    return
-  except Exception as e:
-    print(f"Pull failed ({e}]")
-
-  _build(image, context_path)
+      try:
+        print(f"Testing image [{image}] not found")
+        print(f"Attempting to pull image [{image}]")
+        docker.pull(image)
+      except Exception as e:
+        print(f"Pull failed ({e})")
+        _build(image, context_path)

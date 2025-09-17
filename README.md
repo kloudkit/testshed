@@ -108,15 +108,16 @@ Configure containers using `pytest` markers/decorators:
 
 - **`@shed_config(**kwargs)`:** Generic container args.
 - **`@shed_env(**envs)`:** Environment variables.
-- **`@shed_volumes(*mounts)`:** Volume mounts as `(source, dest)` or `InlineVolume`.
+- **`@shed_volumes(*mounts)`:** Volume mounts as `(source, dest)` or `BaseVolume`.
 
 ```python
-from kloudkit.testshed.docker import InlineVolume
+from kloudkit.testshed.docker import InlineVolume, RemoteVolume
 
 @shed_env(MY_ENV_VAR="hello")
 @shed_volumes(
   ("/path/to/host/data", "/app/data:ro"),
   InlineVolume("/app/config.txt", "any content you want", mode=0o644),
+  RemoteVolume("/app/remote-config.json", "https://api.example.com/config.json", mode=0o644),
 )
 def test_configured_docker_app(docker_sidecar):
   app = docker_sidecar("my-custom-app:latest")

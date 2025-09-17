@@ -4,21 +4,21 @@ from typing import Sequence
 from python_on_whales.components.volume.cli_wrapper import VolumeDefinition
 
 from kloudkit.testshed._internal.state import get_state
-from kloudkit.testshed.docker.inline_volume import InlineVolume
+from kloudkit.testshed.docker.volumes.base_volume import BaseVolume
 
 
 class VolumeManager:
   def __init__(self):
-    self._inline_volumes: list[InlineVolume] = []
+    self._volume_objects: list[BaseVolume] = []
 
-  def _convert_from_inline(self, volume: InlineVolume) -> tuple[str, str]:
-    self._inline_volumes.append(volume)
+  def _convert_from_volume_object(self, volume: BaseVolume) -> tuple[str, str]:
+    self._volume_objects.append(volume)
 
     return (volume.create(), volume.path)
 
   def normalize(
     self,
-    volumes: Sequence[tuple[str | Path, str | Path] | InlineVolume],
+    volumes: Sequence[tuple[str | Path, str | Path] | BaseVolume],
   ) -> list[VolumeDefinition]:
     """Resolve paths to `stubs` when relative and mark as read-only."""
 
@@ -26,8 +26,8 @@ class VolumeManager:
     normalized_volumes = []
 
     for volume in volumes:
-      if isinstance(volume, InlineVolume):
-        volume = self._convert_from_inline(volume)
+      if isinstance(volume, BaseVolume):
+        volume = self._convert_from_volume_object(volume)
 
       source, dest = volume
 
@@ -40,9 +40,9 @@ class VolumeManager:
     return normalized_volumes
 
   def cleanup(self) -> None:
-    """Clean up InlineVolume temporary files."""
+    """Clean up volume object temporary files."""
 
-    for inline_volume in self._inline_volumes:
-      inline_volume.cleanup()
+    for volume_object in self._volume_objects:
+      volume_object.cleanup()
 
-    self._inline_volumes.clear()
+    self._volume_objects.clear()

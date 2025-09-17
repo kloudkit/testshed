@@ -1,8 +1,7 @@
 from pathlib import Path
 
-import requests
-
 from kloudkit.testshed._internal.state import get_state
+from kloudkit.testshed.utils.http import download
 
 import pytest
 
@@ -37,19 +36,16 @@ def downloader(tmp_path):
     request_options: dict | None = None,
   ) -> Path:
     output_path = tmp_path / output
-    request_options = request_options or {}
 
-    response = requests.request(
-      method,
+    content = download(
       url,
+      method=method,
       allow_redirects=allow_redirects,
-      **request_options,
+      raise_for_status=raise_for_status,
+      request_options=request_options,
     )
 
-    if raise_for_status:
-      response.raise_for_status()
-
-    output_path.write_bytes(response.content)
+    output_path.write_bytes(content)
 
     return output_path
 

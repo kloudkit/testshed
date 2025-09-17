@@ -1,5 +1,6 @@
 from kloudkit.testshed.docker.decorators import shed_env, shed_volumes
-from kloudkit.testshed.docker.inline_volume import InlineVolume
+from kloudkit.testshed.docker.volumes.inline_volume import InlineVolume
+from kloudkit.testshed.docker.volumes.remote_volume import RemoteVolume
 
 
 @shed_env(HELLO="world")
@@ -20,3 +21,13 @@ def test_volume_pointing_to_absolute_path(shed):
 @shed_volumes(InlineVolume("/test/inline.txt", "test content"))
 def test_volume_with_inline_volume(shed):
   assert shed.execute(["cat", "/test/inline.txt"]) == "test content"
+
+
+@shed_volumes(
+  RemoteVolume(
+    "/test/readme.md",
+    "https://raw.githubusercontent.com/kloudkit/testshed/main/README.md",
+  )
+)
+def test_volume_with_remote_volume(shed):
+  assert "# KloudKIT TestShed" in shed.execute(["cat", "/test/readme.md"])

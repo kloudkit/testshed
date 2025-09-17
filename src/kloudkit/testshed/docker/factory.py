@@ -3,7 +3,7 @@ from kloudkit.testshed.docker.container import Container
 from kloudkit.testshed.docker.probes.http_probe import HttpProbe
 from kloudkit.testshed.docker.probes.readiness_check import ReadinessCheck
 from kloudkit.testshed.docker.runtime.cleanup import Cleanup
-from kloudkit.testshed.docker.volume_manager import VolumeManager
+from kloudkit.testshed.docker.volumes.volume_manager import VolumeManager
 
 
 class Factory:
