@@ -10,6 +10,15 @@ class HttpProbe:
   command: str = "curl"
   timeout: float = 30.0
 
+  @property
+  def url(self) -> str:
+    """Full target URL."""
+
+    port = f":{self.port}" if self.port else ""
+    endpoint = self.endpoint if self.endpoint else ""
+
+    return "".join((self.host, port, endpoint))
+
   def merge(
     self, other: "HttpProbe", *, ignore_none: bool = True
   ) -> Self:

@@ -1,10 +1,7 @@
 from importlib.metadata import version
 
-from kloudkit.testshed.docker import (
-  Container,
-  Factory as DockerFactory,
-  HttpProbe,
-)
+from kloudkit.testshed.docker import Container, HttpProbe
+from kloudkit.testshed.docker.factory import Factory as DockerFactory
 from kloudkit.testshed.utils.network import available_port
 
 

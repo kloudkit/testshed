@@ -1,8 +1,9 @@
 # KloudKIT TestShed
 
-`KloudKIT TestShed` is a `pytest` plugin that streamlines integration tests with Docker
-containers and Playwright—handling setup, execution, and teardown so you can focus on
-writing effective tests.
+> Meet **KloudKIT TestShed**, a tidy home for your integration-testing power tools.
+>
+> It snap-fits into `pytest`, auto-provisions Docker, runs Playwright, and cleans up after itself
+> so you can focus on building sharp tests.
 
 ## Features
 

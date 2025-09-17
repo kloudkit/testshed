@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "testshed"
-description = "🧪 The support crew for your test bench"
+description = "🛠️ PyTest's tool shed: Docker up, Playwright on, cleanup done"
 requires-python = ">=3.11"
 authors = [{ name = "Dov Benyomin Sohacheski", email = "b@kloud.email" }]
 license = { text = "MIT" }

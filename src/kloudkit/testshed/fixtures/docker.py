@@ -1,6 +1,6 @@
 from typing import Generator
 
-from kloudkit.testshed.docker import Factory
+from kloudkit.testshed.docker.factory import Factory
 
 import pytest
 
