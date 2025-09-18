@@ -1,6 +1,5 @@
 import os
 import random
-import threading
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -20,13 +19,13 @@ def _generate_instance_key(project_name: str) -> str:
 
 
 @dataclass(slots=True)
-class Options:
+class ShedState:
   instance_key: str
-  image: str | None = None
-  tag: str = "tests"
-  src_path: Path | None = None
-  tests_path: Path | None = None
-  stubs_path: Path | None = None
+  image: str
+  tag: str
+  src_path: Path
+  tests_path: Path
+  stubs_path: Path
 
   @property
   def labels(self) -> dict[str, str]:
@@ -54,14 +53,14 @@ class Options:
   @classmethod
   def create(
     cls,
-    project_name: str | None = None,
-    image: str | None = None,
-    tag: str = "tests",
-    src_path: Path | None = None,
-    tests_path: Path | None = None,
-    stubs_path: Path | None = None,
-  ) -> "Options":
-    """Create an Options instance with a dynamic instance key."""
+    project_name: str,
+    image: str,
+    tag: str,
+    src_path: Path,
+    tests_path: Path,
+    stubs_path: Path,
+  ) -> "ShedState":
+    """Create a ShedState instance with a dynamic instance key."""
 
     return cls(
       instance_key=_generate_instance_key(project_name),
@@ -71,22 +70,3 @@ class Options:
       tests_path=tests_path,
       stubs_path=stubs_path,
     )
-
-
-_state: Options | None = None
-_state_lock = threading.RLock()
-
-
-def get_state() -> Options:
-  """Get the current state in a thread-safe manner."""
-
-  with _state_lock:
-    return _state
-
-
-def set_state(options: Options) -> None:
-  """Set the global state in a thread-safe manner."""
-
-  global _state
-  with _state_lock:
-    _state = options

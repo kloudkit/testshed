@@ -1,23 +1,23 @@
 from pathlib import Path
 
-from kloudkit.testshed._internal.state import get_state
+from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.utils.http import download
 
 import pytest
 
 
 @pytest.fixture(scope="session")
-def test_root() -> Path:
+def test_root(shed_state: ShedState) -> Path:
   """Absolute path to the tests root."""
 
-  return get_state().tests_path
+  return shed_state.tests_path
 
 
 @pytest.fixture(scope="session")
-def project_root() -> Path:
+def project_root(shed_state: ShedState) -> Path:
   """Absolute path to the project source root."""
 
-  return get_state().src_path
+  return shed_state.src_path
 
 
 @pytest.fixture

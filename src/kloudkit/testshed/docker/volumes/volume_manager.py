@@ -3,13 +3,14 @@ from typing import Sequence
 
 from python_on_whales.components.volume.cli_wrapper import VolumeDefinition
 
-from kloudkit.testshed._internal.state import get_state
+from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.docker.volumes.base_volume import BaseVolume
 
 
 class VolumeManager:
-  def __init__(self):
+  def __init__(self, state: ShedState):
     self._volume_objects: list[BaseVolume] = []
+    self._state = state
 
   def _convert_from_volume_object(self, volume: BaseVolume) -> tuple[str, str]:
     self._volume_objects.append(volume)
@@ -22,7 +23,7 @@ class VolumeManager:
   ) -> list[VolumeDefinition]:
     """Resolve paths to `stubs` when relative and mark as read-only."""
 
-    stubs_path = get_state().stubs_path
+    stubs_path = self._state.stubs_path
     normalized_volumes = []
 
     for volume in volumes:

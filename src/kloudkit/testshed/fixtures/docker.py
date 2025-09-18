@@ -1,14 +1,15 @@
 from typing import Generator
 
+from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.docker.factory import Factory
 
 import pytest
 
 
-def _create_docker_sidecar() -> Generator[Factory, None, None]:
+def _create_docker_sidecar(state: ShedState) -> Generator[Factory, None, None]:
   """Launch Docker sidecar instances."""
 
-  factory = Factory()
+  factory = Factory(state)
 
   yield factory
 
@@ -16,21 +17,25 @@ def _create_docker_sidecar() -> Generator[Factory, None, None]:
 
 
 @pytest.fixture
-def docker_sidecar() -> Generator[Factory, None, None]:
+def docker_sidecar(shed_state: ShedState) -> Generator[Factory, None, None]:
   """Function-scoped Docker sidecar."""
 
-  yield from _create_docker_sidecar()
+  yield from _create_docker_sidecar(shed_state)
 
 
 @pytest.fixture(scope="module")
-def docker_module_sidecar() -> Generator[Factory, None, None]:
+def docker_module_sidecar(
+  shed_state: ShedState,
+) -> Generator[Factory, None, None]:
   """Module-scoped Docker sidecar."""
 
-  yield from _create_docker_sidecar()
+  yield from _create_docker_sidecar(shed_state)
 
 
 @pytest.fixture(scope="session")
-def docker_session_sidecar() -> Generator[Factory, None, None]:
+def docker_session_sidecar(
+  shed_state: ShedState,
+) -> Generator[Factory, None, None]:
   """Session-scoped Docker sidecar."""
 
-  yield from _create_docker_sidecar()
+  yield from _create_docker_sidecar(shed_state)

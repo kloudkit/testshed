@@ -1,8 +1,15 @@
-from kloudkit.testshed._internal.state import get_state
+from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.docker.container_config import ContainerConfig
 from kloudkit.testshed.docker.probes.http_probe import HttpProbe
 
 import pytest
+
+
+@pytest.fixture(scope="session")
+def shed_state(request: pytest.FixtureRequest) -> ShedState:
+  """TestShed state configuration."""
+
+  return request.config.shed
 
 
 @pytest.fixture(scope="session")
@@ -13,10 +20,10 @@ def shed_container_defaults():
 
 
 @pytest.fixture(scope="session")
-def shed_tag(request: pytest.FixtureRequest) -> str:
+def shed_tag(shed_state: ShedState) -> str:
   """Fully-qualified Docker testing image for test runs."""
 
-  return get_state().image_and_tag
+  return shed_state.image_and_tag
 
 
 @pytest.fixture(scope="session")

@@ -1,11 +1,24 @@
 import os
+from pathlib import Path
 from unittest.mock import patch
 
-from kloudkit.testshed._internal.state import Options
+from kloudkit.testshed.core.state import ShedState
+
+
+def create_test_state(project_name: str) -> ShedState:
+  """Helper to create ShedState with test defaults."""
+  return ShedState.create(
+    project_name=project_name,
+    image="test:latest",
+    tag="tests",
+    src_path=Path("/test/src"),
+    tests_path=Path("/test/tests"),
+    stubs_path=Path("/test/stubs"),
+  )
 
 
 def test_generate_name_with_project():
-  options = Options.create(project_name="myproject")
+  options = create_test_state("myproject")
 
   parts = options.network.split("-")
 
@@ -20,7 +33,7 @@ def test_generate_name_with_project():
 
 def test_generate_name_with_xdist():
   with patch.dict(os.environ, {"PYTEST_XDIST_WORKER": "gw0"}):
-    options = Options.create(project_name="myproject")
+    options = create_test_state("myproject")
 
     parts = options.network.split("-")
 
@@ -35,8 +48,8 @@ def test_generate_name_with_xdist():
 
 
 def test_generate_name_random_suffix():
-  options1 = Options.create(project_name="test")
-  options2 = Options.create(project_name="test")
+  options1 = create_test_state("test")
+  options2 = create_test_state("test")
 
   assert options1.network != options2.network
 

@@ -1,5 +1,3 @@
-from kloudkit.testshed._internal.state import get_state
-
 import pytest
 
 
@@ -12,10 +10,8 @@ def pytest_report_header(config: pytest.Config) -> list[str]:
   if config.getoption("shed_skip_bootstrap"):
     return ["shed-bootstrap: skipped"]
 
-  state = get_state()
-
   return [
-    f"shed-image: {state.image_and_tag}",
-    f"shed-network: {state.network}",
-    f"shed-stubs: {state.stubs_path}",
+    f"shed-image: {config.shed.image_and_tag}",
+    f"shed-network: {config.shed.network}",
+    f"shed-stubs: {config.shed.stubs_path}",
   ]

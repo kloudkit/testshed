@@ -3,14 +3,16 @@ import contextlib
 from python_on_whales import docker
 from python_on_whales.exceptions import DockerException
 
-from kloudkit.testshed._internal.state import get_state
+from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.docker.container import Container
 
 
 class Cleanup:
-  @classmethod
+  def __init__(self, state: ShedState):
+    self._state = state
+
   def run(
-    cls,
+    self,
     containers: list[Container] | None = None,
     labels: dict | None = None,
     network: bool = False,
@@ -18,7 +20,7 @@ class Cleanup:
     """Force-remove all provided containers or labeled."""
 
     if containers is None:
-      labels = labels or get_state().labels
+      labels = labels or self._state.labels
 
       key, value = next(iter(labels.items()))
 
@@ -32,4 +34,4 @@ class Cleanup:
 
     if network:
       with contextlib.suppress(DockerException):
-        docker.network.remove(get_state().network)
+        docker.network.remove(self._state.network)

@@ -1,4 +1,4 @@
-from kloudkit.testshed._internal.state import get_state
+from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.docker.container import Container
 from kloudkit.testshed.docker.probes.http_probe import HttpProbe
 from kloudkit.testshed.docker.probes.readiness_check import ReadinessCheck
@@ -7,9 +7,11 @@ from kloudkit.testshed.docker.volumes.volume_manager import VolumeManager
 
 
 class Factory:
-  def __init__(self):
+  def __init__(self, state: ShedState):
     self._containers: list[Container] = []
-    self._volume_manager = VolumeManager()
+    self._volume_manager = VolumeManager(state)
+    self._cleanup = Cleanup(state)
+    self._state = state
 
   def __call__(self, *args, **kwargs) -> Container | str:
     """Delegate to `build`."""
@@ -35,7 +37,7 @@ class Factory:
       remove=True,
       labels=self._prepare_labels(test_name),
       detach=detach,
-      networks=kwargs.pop("networks", [get_state().network]),
+      networks=kwargs.pop("networks", [self._state.network]),
       volumes=self._volume_manager.normalize(kwargs.pop("volumes", [])),
       **kwargs,
     )
@@ -53,7 +55,7 @@ class Factory:
   def _prepare_labels(self, test_name: str | None) -> dict:
     """Prepare labels to track Docker container instance."""
 
-    labels = get_state().labels
+    labels = self._state.labels
 
     if test_name:
       labels["com.kloudkit.testshed.test"] = test_name
@@ -63,6 +65,6 @@ class Factory:
   def cleanup(self) -> None:
     """Force-remove all containers started during test-cases."""
 
-    Cleanup.run(self._containers, get_state().labels)
+    self._cleanup.run(self._containers)
 
     self._volume_manager.cleanup()
