@@ -1,4 +1,8 @@
-from kloudkit.testshed.docker.decorators import shed_env, shed_volumes
+from kloudkit.testshed.docker.decorators import (
+  shed_config,
+  shed_env,
+  shed_volumes,
+)
 from kloudkit.testshed.docker.volumes.inline_volume import InlineVolume
 from kloudkit.testshed.docker.volumes.remote_volume import RemoteVolume
 
@@ -31,3 +35,8 @@ def test_volume_with_inline_volume(shed):
 )
 def test_volume_with_remote_volume(shed):
   assert "# KloudKIT TestShed" in shed.execute(["cat", "/test/readme.md"])
+
+
+@shed_config(workdir="/tmp")
+def test_config(shed):
+  assert shed.execute(["pwd"]) == "/tmp"

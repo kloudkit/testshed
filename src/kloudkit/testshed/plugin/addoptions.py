@@ -44,7 +44,6 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     help="Image acquisition policy for building or pulling.",
   )
 
-
   parser.addoption(
     "--shed-src-dir",
     action="store",

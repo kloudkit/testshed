@@ -52,9 +52,7 @@ class FileSystem(Wrapper["Container"]):
     if hidden:
       flags = f"{flags}a"
 
-    return tuple(
-      self._wrapped.execute(["\\ls", flags, str(path)]).splitlines()
-    )
+    return tuple(self._wrapped.execute(["\\ls", flags, str(path)]).splitlines())
 
   def __call__(self, path: str | Path) -> str:
     """Retrieve the content of a file for a given path."""

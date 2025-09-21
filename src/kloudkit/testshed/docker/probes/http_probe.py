@@ -19,9 +19,7 @@ class HttpProbe:
 
     return "".join((self.host, port, endpoint))
 
-  def merge(
-    self, other: "HttpProbe", *, ignore_none: bool = True
-  ) -> Self:
+  def merge(self, other: "HttpProbe", *, ignore_none: bool = True) -> Self:
     """Merge two Probes."""
 
     if not ignore_none:
