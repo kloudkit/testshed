@@ -1,4 +1,4 @@
-from kloudkit.testshed.docker import Container
+from kloudkit.testshed.docker import Container, HttpProbe
 
 
 def test_container_creation(docker_sidecar):
@@ -24,3 +24,13 @@ def test_container_ip_address(docker_sidecar):
   )
 
   assert len(container.ip().split(".")) == 4
+
+
+def test_nginx_with_probe(docker_sidecar):
+  container = docker_sidecar(
+    image="nginx:1.27-alpine",
+    probe=HttpProbe(port=80, timeout=3.0),
+  )
+
+  assert isinstance(container, Container)
+  assert "nginx" in container.execute(["curl", "-s", "http://localhost:80"])

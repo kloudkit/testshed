@@ -2,6 +2,8 @@ from pathlib import Path
 
 from kloudkit.testshed.core.bootstrap import init_shed_image, init_shed_network
 from kloudkit.testshed.core.state import ShedState
+from kloudkit.testshed.plugin.fixtures import register as register_fixtures
+from kloudkit.testshed.plugin.markers import register as register_markers
 from kloudkit.testshed.plugin.validation import validate_config
 
 import pytest
@@ -13,33 +15,15 @@ def _resolve_path(directory: str, config: pytest.Config) -> Path:
   return (config.inipath.parent / directory).resolve()
 
 
-def _addinivalue_line(config: pytest.Config) -> None:
-  config.addinivalue_line(
-    "markers",
-    "shed_config(**configs): assign generic configs to the `shed` instance",
-  )
-  config.addinivalue_line(
-    "markers",
-    "shed_env(**envs): assign environment variables to the `shed` instance",
-  )
-  config.addinivalue_line(
-    "markers",
-    (
-      "shed_volumes(*mounts): assign volume mounts to the `shed` instance."
-      " Supports tuples `(source, dest)` or `InlineVolume` objects"
-    ),
-  )
-
-
 def pytest_configure(config: pytest.Config) -> None:
   """Bootstrap Docker image and network used in tests."""
-
-  _addinivalue_line(config)
 
   if not config.getoption("shed"):
     return
 
   validate_config(config)
+  register_markers(config)
+  register_fixtures(config)
 
   state = ShedState.create(
     project_name=config.inipath.parent.name,

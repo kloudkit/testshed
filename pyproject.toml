@@ -32,7 +32,12 @@ dynamic = ["readme", "version"]
 "Source Code" = "https://github.com/kloudkit/testshed"
 
 [project.optional-dependencies]
-dev = ["pre-commit>=4.2.0", "ruff>=0.12.0"]
+dev = [
+  "pre-commit>=4.2.0",
+  "ruff>=0.12.0",
+  "coverage>=7.10.6",
+  "pytest-cov>=7.0.0",
+]
 
 [project.entry-points.pytest11]
 testshed = "kloudkit.testshed.plugin"
@@ -41,5 +46,27 @@ testshed = "kloudkit.testshed.plugin"
 readme = { file = ["README.md"], content-type = "text/markdown" }
 version = { attr = "kloudkit.testshed.__version__" }
 
+[tool.coverage.run]
+source = ["kloudkit.testshed"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*"
+]
+
 [tool.coverage.report]
-exclude_lines = ["@(abc\\.)?abstractmethod", "# pragma: no cover"]
+exclude_lines = [
+    "@(abc\\.)?abstractmethod",
+    "# pragma: no cover",
+    "if __name__ == .__main__.:",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError"
+]
+show_missing = true
+precision = 2
+fail_under = 80
+
+[tool.coverage.html]
+directory = "htmlcov"

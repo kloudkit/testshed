@@ -19,3 +19,9 @@ def shed_volumes(*mounts: tuple[str, str] | BaseVolume) -> pytest.MarkDecorator:
   """Assign volume mounts to the `shed` instance."""
 
   return pytest.mark.shed_volumes(*mounts)
+
+
+def shed_mutable() -> pytest.MarkDecorator:
+  """Force non-default shed for tests that perform mutable operations."""
+
+  return pytest.mark.shed_env(_SHED_MUTABLE="true")

@@ -20,21 +20,20 @@ pip install testshed
 
 ## Usage
 
-### Fixture Imports
+### Fixture Auto-Discovery
 
-Fixtures are located in `kloudkit.testshed.fixtures` and can be imported:
+TestShed fixtures are automatically available when `--shed` is enabled.
 
-**All fixtures at once:**
-
-```python
-from kloudkit.testshed.fixtures import *  # noqa: F403
+```bash
+pytest --shed
 ```
 
-**Individual fixtures (opt-in):**
+For manual control or when `--shed` is not used, you can still import specific fixtures:
 
 ```python
-from kloudkit.testshed.fixtures.docker import *  # noqa: F403
-# ...
+from kloudkit.testshed.fixtures.docker import docker_sidecar
+from kloudkit.testshed.fixtures.shed import shed
+from kloudkit.testshed.fixtures.playwright import playwright_browser
 ```
 
 ### Docker container testing
@@ -110,6 +109,7 @@ Configure containers using `pytest` markers/decorators:
 - **`@shed_config(**kwargs)`:** Generic container args.
 - **`@shed_env(**envs)`:** Environment variables.
 - **`@shed_volumes(*mounts)`:** Volume mounts as `(source, dest)` or `BaseVolume`.
+- **`@shed_mutable()`:** Force non-default shed for tests that perform mutable operations.
 
 ```python
 from kloudkit.testshed.docker import InlineVolume, RemoteVolume
