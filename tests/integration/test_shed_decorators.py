@@ -1,6 +1,7 @@
 from kloudkit.testshed.docker.decorators import (
   shed_config,
   shed_env,
+  shed_mutable,
   shed_volumes,
 )
 from kloudkit.testshed.docker.volumes.inline_volume import InlineVolume
@@ -40,3 +41,12 @@ def test_volume_with_remote_volume(shed):
 @shed_config(workdir="/tmp")
 def test_config(shed):
   assert shed.execute(["pwd"]) == "/tmp"
+
+
+def test_default(shed, shed_default):
+  assert shed == shed_default
+
+
+@shed_mutable()
+def test_mutable(shed, shed_default):
+  assert shed != shed_default

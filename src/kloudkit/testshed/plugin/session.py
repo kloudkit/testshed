@@ -15,4 +15,5 @@ def pytest_keyboard_interrupt(excinfo):
 def pytest_sessionfinish(session: pytest.Session):
   """Cleanup all Docker resources at the end of the test session."""
 
-  Cleanup(session.config.shed).run(network=True)
+  if getattr(session.config, "shed", None):
+    Cleanup(session.config.shed).run(network=True)
