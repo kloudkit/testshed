@@ -54,6 +54,12 @@ class FileSystem(Wrapper["Container"]):
 
     return tuple(self._wrapped.execute(["\\ls", flags, str(path)]).splitlines())
 
+  @error_handler
+  def mode(self, path: str | Path) -> str:
+    """Retrieve the file or directory mode for a given path."""
+
+    return self._wrapped.execute(["stat", "-c", "%a", str(path)]).strip()
+
   def __call__(self, path: str | Path) -> str:
     """Retrieve the content of a file for a given path."""
 

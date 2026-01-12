@@ -1,5 +1,7 @@
 from kloudkit.testshed.docker.decorators import shed_volumes
 
+import pytest
+
 
 VOLUMES = [
   ("a.json", "/tmp/a.json"),
@@ -52,3 +54,16 @@ def test_ls_hidden(shed):
   listing = shed.fs.ls("/tmp", hidden=True)
 
   assert ".hidden" in listing
+
+
+@shed_volumes(*VOLUMES)
+@pytest.mark.parametrize(
+  ("path", "mode"),
+  [("/tmp/sample.txt", "644"), ("/tmp", "1777")],
+)
+def test_mode(shed, path, mode):
+  actual_mode = shed.fs.mode(path)
+
+  assert isinstance(actual_mode, str)
+  assert actual_mode.isdigit()
+  assert actual_mode == mode

@@ -84,3 +84,8 @@ def test_user_parameter_override():
   wrapped.execute.assert_called_once_with(
     ["/bin/sh", "-c", "echo test"], user="override_user"
   )
+
+
+@pytest.mark.skip("@todo: fix long repl")
+def test_repr(mock_shell):
+  assert repr(mock_shell) == ""
