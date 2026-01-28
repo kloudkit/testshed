@@ -26,6 +26,23 @@ def test_missing_shed_image(shed_image):
     validate_config(config)
 
 
+@pytest.mark.parametrize(
+  "shed_image",
+  [
+    "ghcr.io/kloudkit/workspace:pr-563",
+    "debian:13",
+    "myimage@sha256:abc123",
+  ],
+)
+def test_shed_image_with_tag_or_digest(shed_image):
+  config = _create_config_mock(shed_image=shed_image, shed_image_policy="pull")
+
+  with pytest.raises(
+    pytest.UsageError, match="must not contain a tag or digest"
+  ):
+    validate_config(config)
+
+
 @pytest.mark.parametrize("shed_image_policy", ["invalid", "wrong", None, ""])
 def test_invalid_shed_policy(shed_image_policy):
   config = _create_config_mock(
