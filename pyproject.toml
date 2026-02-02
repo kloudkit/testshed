@@ -7,14 +7,14 @@ name = "testshed"
 description = "🛠️ PyTest's tool shed: Docker up, Playwright on, cleanup done"
 requires-python = ">=3.11"
 authors = [{ name = "Dov Benyomin Sohacheski", email = "b@kloud.email" }]
-license = { text = "MIT" }
+license = "MIT"
 keywords = ["pytest", "docker", "fixtures", "playwright", "testing"]
 classifiers = [
   "Framework :: Pytest",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
 dependencies = [
