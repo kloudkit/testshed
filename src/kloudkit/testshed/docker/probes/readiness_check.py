@@ -1,3 +1,4 @@
+import contextlib
 import time
 
 from python_on_whales.exceptions import DockerException
@@ -9,9 +10,12 @@ import pytest
 
 
 class ReadinessCheck:
-  def __init__(self, container: Container, probe: HttpProbe):
+  def __init__(
+    self, container: Container, probe: HttpProbe, *, container_logs=None
+  ):
     self._container: Container = container
     self._probe: HttpProbe = probe
+    self._container_logs = container_logs
 
   @property
   def command(self) -> list[str]:
@@ -35,5 +39,9 @@ class ReadinessCheck:
         return
       except DockerException:
         time.sleep(0.1)
+
+    if self._container_logs:
+      with contextlib.suppress(Exception):
+        self._container_logs(self._container.logs())
 
     pytest.fail(failure_message, pytrace=False)

@@ -1,5 +1,6 @@
 import os
 import random
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -26,6 +27,7 @@ class ShedState:
   src_path: Path
   tests_path: Path
   stubs_path: Path
+  container_logs: Callable[[str], None] | None
 
   @property
   def labels(self) -> dict[str, str]:
@@ -59,6 +61,7 @@ class ShedState:
     src_path: Path,
     tests_path: Path,
     stubs_path: Path,
+    container_logs: Callable[[str], None] | None,
   ) -> "ShedState":
     """Create a ShedState instance with a dynamic instance key."""
 
@@ -69,4 +72,5 @@ class ShedState:
       src_path=src_path,
       tests_path=tests_path,
       stubs_path=stubs_path,
+      container_logs=container_logs,
     )

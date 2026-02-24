@@ -146,6 +146,7 @@ TestShed extends `pytest` with options to control the Docker environment:
 - **`--shed-build-context DIR`:** Docker build context *(default: `pytest.ini` directory)*.
 - **`--shed-image-policy POLICY`:** Image acquisition policy for building or pulling *(default: `pull`)*.
 - **`--shed-skip-bootstrap`:** Skip Docker bootstrapping *(useful for unit tests)*.
+- **`--shed-container-logs`:** Print container logs on failure *(default: disabled)*.
 
 > [!NOTE]
 > When TestShed is installed globally, you must explicitly enable it per suite with

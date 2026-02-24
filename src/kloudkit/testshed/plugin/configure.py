@@ -1,3 +1,4 @@
+from functools import partial
 from pathlib import Path
 
 from kloudkit.testshed.core.bootstrap import init_shed_image, init_shed_network
@@ -5,6 +6,7 @@ from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.plugin.fixtures import register as register_fixtures
 from kloudkit.testshed.plugin.markers import register as register_markers
 from kloudkit.testshed.plugin.validation import validate_config
+from kloudkit.testshed.utils.terminal import print_container_logs
 
 import pytest
 
@@ -25,6 +27,12 @@ def pytest_configure(config: pytest.Config) -> None:
   register_markers(config)
   register_fixtures(config)
 
+  container_logs = (
+    partial(print_container_logs, config)
+    if config.getoption("shed_container_logs")
+    else None
+  )
+
   state = ShedState.create(
     project_name=config.inipath.parent.name,
     image=config.getoption("shed_image"),
@@ -32,6 +40,7 @@ def pytest_configure(config: pytest.Config) -> None:
     src_path=_resolve_path("src_dir", config),
     stubs_path=_resolve_path("stubs_dir", config),
     tests_path=_resolve_path("tests_dir", config),
+    container_logs=container_logs,
   )
 
   config.shed = state

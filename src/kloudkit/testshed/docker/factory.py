@@ -39,6 +39,7 @@ class Factory:
       detach=detach,
       networks=kwargs.pop("networks", [self._state.network]),
       volumes=self._volume_manager.normalize(kwargs.pop("volumes", [])),
+      container_logs=self._state.container_logs,
       **kwargs,
     )
 
@@ -48,7 +49,9 @@ class Factory:
     self._containers.append(container)
 
     if probe:
-      ReadinessCheck(container, probe).wait()
+      ReadinessCheck(
+        container, probe, container_logs=self._state.container_logs
+      ).wait()
 
     return container
 

@@ -13,6 +13,7 @@ def _create_test_state(project_name: str) -> ShedState:
     src_path=Path("/test/src"),
     tests_path=Path("/test/tests"),
     stubs_path=Path("/test/stubs"),
+    container_logs=None,
   )
 
 
@@ -68,6 +69,7 @@ def test_image_and_tag_with_sha():
     src_path=Path("/test/src"),
     tests_path=Path("/test/tests"),
     stubs_path=Path("/test/stubs"),
+    container_logs=None,
   )
 
   assert state.image_and_tag == "myregistry/myimage@sha256:abc123def456"

@@ -1,3 +1,4 @@
+import contextlib
 import functools
 import re
 from typing import Callable, ParamSpec, TypeVar
@@ -43,7 +44,12 @@ def error_handler(fn: Callable[P, T]) -> Callable[P, T]:
 
       failure = error_message(error)
 
-    if failure:
-      pytest.fail(failure, pytrace=False)
+    printer = self._get("container_logs")
+
+    if printer:
+      with contextlib.suppress(Exception):
+        printer(self._wrapped.logs())
+
+    pytest.fail(failure, pytrace=False)
 
   return _wrapped

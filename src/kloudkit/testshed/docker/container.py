@@ -37,15 +37,18 @@ class Container(Wrapper[NativeContainer]):
       user=self.DEFAULT_USER,
       shell=self.DEFAULT_SHELL,
       login_shell=self.LOGIN_SHELL,
+      container_logs=getattr(self._args, "container_logs", False),
     )
 
   @classmethod
   def run(cls, *args, **kwargs):
     """Wrap the native `docker.run`."""
 
+    container_logs = kwargs.pop("container_logs", False)
+
     instance = docker.run(*args, **kwargs)
 
     if isinstance(instance, str):
       return instance
 
-    return cls(instance)
+    return cls(instance, container_logs=container_logs)

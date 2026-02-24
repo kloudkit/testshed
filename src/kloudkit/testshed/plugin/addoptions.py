@@ -74,3 +74,10 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     default=False,
     help="Skip Docker bootstrapping (useful for unit tests).",
   )
+
+  parser.addoption(
+    "--shed-container-logs",
+    action="store_true",
+    default=False,
+    help="Print container logs on failure.",
+  )

@@ -23,7 +23,11 @@ def test_header_skip_bootstrap():
   assert pytest_report_header(config) == ["shed-bootstrap: skipped"]
 
 
-def test_header_with_shed():
+@pytest.mark.parametrize(
+  ("container_logs", "expected_label"),
+  [(True, "active"), (False, "skipped")],
+)
+def test_header_with_shed(container_logs, expected_label):
   config = Mock(spec=pytest.Config)
 
   config.getoption.side_effect = lambda option: {
@@ -35,10 +39,12 @@ def test_header_with_shed():
   shed_mock.image_and_tag = "test-image:latest"
   shed_mock.network = "test-network"
   shed_mock.stubs_path = "/path/to/stubs"
+  shed_mock.container_logs = container_logs
   config.shed = shed_mock
 
   assert pytest_report_header(config) == [
     "shed-image: test-image:latest",
     "shed-network: test-network",
     "shed-stubs: /path/to/stubs",
+    f"shed-container-logs: {expected_label}",
   ]
