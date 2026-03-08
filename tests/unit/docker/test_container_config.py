@@ -83,3 +83,56 @@ def test_create_with_all_markers():
   assert config.volumes == ("/vol1",)
   assert config.args == {"image": "test:latest"}
   assert config.test_name == "test_module::test_function"
+
+
+def test_merge_with_no_overrides():
+  config = ContainerConfig(
+    envs={"A": "1"}, volumes=("/v1",), args={"x": "y"}, test_name="test_fn"
+  )
+
+  merged = config.merge()
+
+  assert merged.envs == {"A": "1"}
+  assert merged.volumes == ("/v1",)
+  assert merged.args == {"x": "y"}
+  assert merged.test_name == "test_fn"
+
+
+def test_merge_envs_override_and_add():
+  config = ContainerConfig(
+    envs={"A": "1", "B": "2"}, volumes=(), args={}, test_name="test_fn"
+  )
+
+  merged = config.merge(envs={"B": "overridden", "C": "3"})
+
+  assert merged.envs == {"A": "1", "B": "overridden", "C": "3"}
+
+
+def test_merge_volumes_concatenate():
+  config = ContainerConfig(
+    envs={}, volumes=("/v1",), args={}, test_name="test_fn"
+  )
+
+  merged = config.merge(volumes=("/v2", "/v3"))
+
+  assert merged.volumes == ("/v1", "/v2", "/v3")
+
+
+def test_merge_args_override():
+  config = ContainerConfig(
+    envs={}, volumes=(), args={"a": "1", "b": "2"}, test_name="test_fn"
+  )
+
+  merged = config.merge(args={"b": "overridden", "c": "3"})
+
+  assert merged.args == {"a": "1", "b": "overridden", "c": "3"}
+
+
+def test_merge_preserves_test_name():
+  config = ContainerConfig(
+    envs={}, volumes=(), args={}, test_name="original::test"
+  )
+
+  merged = config.merge(envs={"X": "1"})
+
+  assert merged.test_name == "original::test"

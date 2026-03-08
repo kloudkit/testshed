@@ -63,6 +63,21 @@ def shed_factory(shed_tag, docker_sidecar, shed_container_defaults):
 
 
 @pytest.fixture
+def shed_deferred(request: pytest.FixtureRequest):
+  """Callable that deploys a container when invoked."""
+
+  config = ContainerConfig.create(request)
+  shed_factory = request.getfixturevalue("shed_factory")
+
+  def _deploy(*, envs=None, volumes=None, **kwargs):
+    return shed_factory(
+      **config.merge(envs=envs, volumes=volumes, args=kwargs).to_dict()
+    )
+
+  return _deploy
+
+
+@pytest.fixture
 def shed(request: pytest.FixtureRequest):
   """Reuses default or creates new based on markers."""
 

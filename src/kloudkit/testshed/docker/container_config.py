@@ -27,6 +27,22 @@ class ContainerConfig:
       **self.args,
     )
 
+  def merge(
+    self,
+    *,
+    envs: dict | None = None,
+    volumes: tuple | None = None,
+    args: dict | None = None,
+  ) -> Self:
+    """Return a new config with call-time overrides merged in."""
+
+    return type(self)(
+      envs={**self.envs, **(envs or {})},
+      volumes=self.volumes + tuple(volumes or ()),
+      args={**self.args, **(args or {})},
+      test_name=self.test_name,
+    )
+
   @classmethod
   def create(cls, request: pytest.FixtureRequest) -> Self:
     """Create configs from a pytest request of the current node."""
