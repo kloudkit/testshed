@@ -15,6 +15,24 @@ def test_run_container():
   assert isinstance(result, Container)
 
 
+def test_ip_via_hostname():
+  container = Container.run("alpine", ["sleep", "infinity"], detach=True)
+
+  ip = container.ip()
+
+  assert ip
+  assert all(part.isdigit() for part in ip.split("."))
+
+
+def test_ip_fallback():
+  container = Container.run("minio/minio", ["server", "/data"], detach=True)
+
+  ip = container.ip()
+
+  assert ip
+  assert all(part.isdigit() for part in ip.split("."))
+
+
 def test_readiness_timeout():
   container = Container.run("alpine", detach=True)
 

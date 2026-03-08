@@ -17,7 +17,16 @@ class Container(Wrapper[NativeContainer]):
   def ip(self) -> str:
     """Retrieve internal IP address of container."""
 
-    return self.execute(["hostname", "-i"])
+    try:
+      return self.execute(["hostname", "-i"], raises=True)
+    except Exception:
+      settings = self._wrapped.network_settings
+
+      return (
+        next(iter(settings.networks.values())).ip_address
+        if settings.networks
+        else settings.ip_address
+      )
 
   @property
   def fs(self) -> FileSystem:
