@@ -31,7 +31,7 @@ dynamic = ["readme", "version"]
 "Bug Tracker" = "https://github.com/kloudkit/testshed/issues"
 "Source Code" = "https://github.com/kloudkit/testshed"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
   "pre-commit>=4.5.1",
   "ruff>=0.15.5",

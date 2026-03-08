@@ -8,7 +8,7 @@ from kloudkit.testshed.core.state import ShedState
 def _create_test_state(project_name: str) -> ShedState:
   return ShedState.create(
     project_name=project_name,
-    image="test:latest",
+    image="test",
     tag="tests",
     src_path=Path("/test/src"),
     tests_path=Path("/test/tests"),
@@ -59,6 +59,12 @@ def test_generate_name_random_suffix():
 
   assert options2.network == options2.instance_key
   assert options2.labels["com.kloudkit.testshed"] == options2.instance_key
+
+
+def test_image_and_tag_with_regular_tag():
+  state = _create_test_state("anything")
+
+  assert state.image_and_tag == "test:tests"
 
 
 def test_image_and_tag_with_sha():

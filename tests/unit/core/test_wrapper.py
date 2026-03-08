@@ -51,3 +51,14 @@ def test_wrapper_repr_no_args():
 
   expected = f"Wrapper({obj!r})"
   assert repr(wrapper) == expected
+
+
+def test_wrapper_repr_with_args():
+  obj = MockObject("x")
+  wrapper = Wrapper(obj, a=1, b="y")
+
+  result = repr(wrapper)
+
+  assert "a=1" in result
+  assert "b='y'" in result
+  assert result.startswith("Wrapper(")
