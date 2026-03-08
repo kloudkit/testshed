@@ -43,15 +43,15 @@ def shed_factory(shed_tag, docker_sidecar, shed_container_defaults):
 
   def _wrapper(**kwargs):
     port = kwargs.pop("port", None)
-    user_probe = kwargs.pop("probe", None)
+    user_probe = kwargs.pop("probe", ...)
 
     probe = shed_container_defaults.get("probe")
 
     if port is not None and probe:
       probe = probe.merge(HttpProbe(port=port))
 
-    if user_probe:
-      probe = probe.merge(user_probe) if probe else user_probe
+    if user_probe is not ...:
+      probe = probe.merge(user_probe) if (probe and user_probe) else user_probe
 
     merged_config = {**shed_container_defaults, **kwargs}
     if probe:
