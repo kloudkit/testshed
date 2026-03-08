@@ -40,6 +40,6 @@ jobs:
 
       - name: 🧪 Run tests with coverage
         run: |
-          uv sync --extra dev
+          uv sync --group dev
           uv run coverage run -m pytest --exitfirst
           uv run coverage report --show-missing

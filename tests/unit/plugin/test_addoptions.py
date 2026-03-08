@@ -56,7 +56,12 @@ def test_shed_image_policy_choices():
 
   calls = {c.args[0]: c.kwargs for c in parser.addoption.call_args_list}
 
-  assert calls["--shed-image-policy"]["choices"] == ["pull", "build", "require", "rebuild"]
+  assert calls["--shed-image-policy"]["choices"] == [
+    "pull",
+    "build",
+    "require",
+    "rebuild",
+  ]
   assert calls["--shed-image-policy"]["default"] == "pull"
 
 
