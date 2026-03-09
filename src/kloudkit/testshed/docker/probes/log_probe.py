@@ -28,4 +28,3 @@ class LogProbe(Probe):
       f"Pattern {self.pattern!r} not found"
       f" in container logs within {self.timeout}s"
     )
-

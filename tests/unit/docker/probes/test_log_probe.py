@@ -21,7 +21,9 @@ def test_custom_values():
 
 def test_check_passes_when_pattern_found():
   container = MagicMock()
-  container.logs.return_value = "Server ready to accept connections on port 5432"
+  container.logs.return_value = (
+    "Server ready to accept connections on port 5432"
+  )
   probe = LogProbe(pattern="ready to accept connections")
 
   probe.check(container)
@@ -49,7 +51,7 @@ def test_check_regex_no_match():
   container.logs.return_value = "Starting server"
   probe = LogProbe(pattern=r"Listening on port \d+")
 
-  with pytest.raises(ValueError):
+  with pytest.raises(ValueError):  # noqa: PT011
     probe.check(container)
 
 

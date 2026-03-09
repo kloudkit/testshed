@@ -15,7 +15,9 @@ class ShellProbe(Probe):
   def check(self, container: "Container") -> None:
     """Single probe attempt. Raise on failure."""
 
-    cmd = self.command if isinstance(self.command, list) else self.command.split()
+    cmd = (
+      self.command if isinstance(self.command, list) else self.command.split()
+    )
     container.execute(cmd, raises=True)
 
   @property
