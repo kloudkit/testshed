@@ -1,47 +1,35 @@
 import contextlib
 import time
 
-from python_on_whales.exceptions import DockerException
-
 from kloudkit.testshed.docker.container import Container
-from kloudkit.testshed.docker.probes.http_probe import HttpProbe
+from kloudkit.testshed.docker.probes.probe import Probe
 
 import pytest
 
 
 class ReadinessCheck:
   def __init__(
-    self, container: Container, probe: HttpProbe, *, container_logs=None
+    self, container: Container, probe: Probe, *, container_logs=None
   ):
     self._container: Container = container
-    self._probe: HttpProbe = probe
+    self._probe: Probe = probe
     self._container_logs = container_logs
 
-  @property
-  def command(self) -> list[str]:
-    """Full probe test command."""
-
-    return [*self._probe.command.split(" "), self._probe.url]
-
   def wait(self) -> None:
-    """Wait until a container responds on the given endpoint."""
+    """Wait until a container passes the probe check."""
 
     deadline = time.time() + self._probe.timeout
 
-    failure_message = (
-      f"URL [{self._probe.url}] was not reachable within {self._probe.timeout}s"
-    )
-
     while time.time() < deadline:
       try:
-        self._container.execute(self.command, raises=True)
+        self._probe.check(self._container)
 
         return
-      except DockerException:
+      except Exception:
         time.sleep(0.1)
 
     if self._container_logs:
       with contextlib.suppress(Exception):
         self._container_logs(self._container.logs())
 
-    pytest.fail(failure_message, pytrace=False)
+    pytest.fail(self._probe.failure_message, pytrace=False)

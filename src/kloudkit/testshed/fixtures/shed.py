@@ -1,6 +1,6 @@
 from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.docker.container_config import ContainerConfig
-from kloudkit.testshed.docker.probes.http_probe import HttpProbe
+from kloudkit.testshed.docker.probes.probe import Probe
 
 import pytest
 
@@ -42,19 +42,16 @@ def shed_factory(shed_tag, docker_sidecar, shed_container_defaults):
   """Callable factory for spinning up containers with configurable defaults."""
 
   def _wrapper(**kwargs):
-    port = kwargs.pop("port", None)
-    user_probe = kwargs.pop("probe", ...)
-
-    probe = shed_container_defaults.get("probe")
-
-    if port is not None and probe:
-      probe = probe.merge(HttpProbe(port=port))
-
-    if user_probe is not ...:
-      probe = probe.merge(user_probe) if (probe and user_probe) else user_probe
+    probe = Probe.resolve(
+      default=shed_container_defaults.get("probe"),
+      user=kwargs.pop("probe", ...),
+      port=kwargs.pop("port", None),
+    )
 
     merged_config = {**shed_container_defaults, **kwargs}
-    if probe:
+    merged_config.pop("probe", None)
+
+    if probe is not None:
       merged_config["probe"] = probe
 
     return docker_sidecar(image=shed_tag, **merged_config)

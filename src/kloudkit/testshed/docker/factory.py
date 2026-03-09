@@ -1,6 +1,6 @@
 from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.docker.container import Container
-from kloudkit.testshed.docker.probes.http_probe import HttpProbe
+from kloudkit.testshed.docker.probes.probe import Probe
 from kloudkit.testshed.docker.probes.readiness_check import ReadinessCheck
 from kloudkit.testshed.docker.runtime.cleanup import Cleanup
 from kloudkit.testshed.docker.volumes.volume_manager import VolumeManager
@@ -23,7 +23,7 @@ class Factory:
     image: str,
     *,
     detach: bool = True,
-    probe: HttpProbe | None = None,
+    probe: Probe | None = None,
     container_class: type[Container] | None = None,
     test_name: str | None = None,
     **kwargs,

@@ -1,4 +1,7 @@
+from unittest.mock import MagicMock
+
 from kloudkit.testshed.docker.probes.http_probe import HttpProbe
+from kloudkit.testshed.docker.probes.probe import Probe
 
 import pytest
 
@@ -96,3 +99,37 @@ def test_merge_empty_probe(ignore_none):
   else:
     assert merged.host == "http://localhost"
     assert merged.port is None
+
+
+def test_inherits_from_probe():
+  probe = HttpProbe()
+
+  assert isinstance(probe, Probe)
+
+
+def test_check_executes_command():
+  container = MagicMock()
+  probe = HttpProbe(port=8080, endpoint="/health")
+
+  probe.check(container)
+
+  container.execute.assert_called_once_with(
+    ["curl", "http://localhost:8080/health"], raises=True
+  )
+
+
+def test_check_raises_on_failure():
+  container = MagicMock()
+  container.execute.side_effect = RuntimeError("connection refused")
+  probe = HttpProbe(port=8080)
+
+  with pytest.raises(RuntimeError, match="connection refused"):
+    probe.check(container)
+
+
+def test_failure_message():
+  probe = HttpProbe(port=8080, endpoint="/health", timeout=15.0)
+
+  assert probe.failure_message == (
+    "URL [http://localhost:8080/health] was not reachable within 15.0s"
+  )
