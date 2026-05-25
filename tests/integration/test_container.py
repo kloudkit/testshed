@@ -40,7 +40,9 @@ def test_ip_fallback(docker_sidecar):
 
 
 def test_readiness_timeout(docker_sidecar):
-  container = docker_sidecar("alpine", detach=True)
+  container = docker_sidecar(
+    "alpine", command=["sleep", "infinity"], detach=True
+  )
 
   readiness_check = ReadinessCheck(
     container, HttpProbe(host="http://unreachable", timeout=0.1)

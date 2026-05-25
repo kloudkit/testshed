@@ -62,3 +62,16 @@ def test_wrapper_repr_with_args():
   assert "a=1" in result
   assert "b='y'" in result
   assert result.startswith("Wrapper(")
+
+
+def test_wrapper_repr_skips_callable_args():
+  import functools
+
+  obj = MockObject("x")
+  wrapper = Wrapper(obj, hook=functools.partial(lambda x: x, 1), label="keep")
+
+  result = repr(wrapper)
+
+  assert "hook" not in result
+  assert "functools" not in result
+  assert "label='keep'" in result

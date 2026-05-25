@@ -25,11 +25,11 @@ class Wrapper(Generic[T]):
   def __repr__(self) -> str:
     """Representation of the wrapper, including passed keyword args."""
 
-    args_dict = vars(self._args)
+    scalar_args = {k: v for k, v in vars(self._args).items() if not callable(v)}
     suffix = ""
 
-    if args_dict:
-      kv = ", ".join(f"{k}={args_dict[k]!r}" for k in sorted(args_dict))
+    if scalar_args:
+      kv = ", ".join(f"{k}={scalar_args[k]!r}" for k in sorted(scalar_args))
 
       suffix = f", {kv}"
 

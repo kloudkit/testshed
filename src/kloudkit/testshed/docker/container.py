@@ -49,6 +49,22 @@ class Container(Wrapper[NativeContainer]):
       container_logs=getattr(self._args, "container_logs", False),
     )
 
+  def __repr__(self) -> str:
+    name = getattr(self._wrapped, "name", None)
+    cid = getattr(self._wrapped, "id", None)
+
+    parts = []
+
+    if name:
+      parts.append(f"name={name!r}")
+
+    if cid:
+      parts.append(f"id={cid[:8]!r}")
+
+    inner = ", ".join(parts) if parts else repr(self._wrapped)
+
+    return f"{type(self).__name__}({inner})"
+
   @classmethod
   def run(cls, *args, **kwargs):
     """Wrap the native `docker.run`."""
