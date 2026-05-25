@@ -5,10 +5,14 @@ from kloudkit.testshed.docker.probes.log_probe import LogProbe
 import pytest
 
 
-def test_default_values():
-  probe = LogProbe()
+def test_pattern_is_required():
+  with pytest.raises(TypeError, match="pattern"):
+    LogProbe()
 
-  assert probe.pattern == ""
+
+def test_default_timeout():
+  probe = LogProbe(pattern="ready")
+
   assert probe.timeout == 30.0
 
 

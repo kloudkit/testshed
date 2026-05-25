@@ -8,7 +8,9 @@ on:
     paths:
       - .github/workflows/*
       - src/**
-      - test/**
+      - tests/**
+      - pyproject.toml
+      - uv.lock
 
 concurrency:
   group: ${{ github.workflow }}
@@ -41,5 +43,5 @@ jobs:
       - name: 🧪 Run tests with coverage
         run: |
           uv sync --group dev
-          uv run coverage run -m pytest --exitfirst
+          uv run coverage run -m pytest --shed --shed-image=debian --shed-tag=13
           uv run coverage report --show-missing

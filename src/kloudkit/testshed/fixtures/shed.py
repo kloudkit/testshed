@@ -59,19 +59,25 @@ def shed_factory(shed_tag, docker_sidecar, shed_container_defaults):
   return _wrapper
 
 
-@pytest.fixture
-def shed_deferred(request: pytest.FixtureRequest):
-  """Callable that deploys a container when invoked."""
-
-  config = ContainerConfig.create(request)
-  shed_factory = request.getfixturevalue("shed_factory")
+def _make_deferred_deploy(config: ContainerConfig, factory):
+  """Build the deferred-deploy callable returned by `shed_deferred`."""
 
   def _deploy(*, envs=None, volumes=None, **kwargs):
-    return shed_factory(
+    return factory(
       **config.merge(envs=envs, volumes=volumes, args=kwargs).to_dict()
     )
 
   return _deploy
+
+
+@pytest.fixture
+def shed_deferred(request: pytest.FixtureRequest):
+  """Callable that deploys a container when invoked."""
+
+  return _make_deferred_deploy(
+    ContainerConfig.create(request),
+    request.getfixturevalue("shed_factory"),
+  )
 
 
 @pytest.fixture
