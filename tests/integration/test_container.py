@@ -5,18 +5,22 @@ from kloudkit.testshed.docker.probes.readiness_check import ReadinessCheck
 import pytest
 
 
-def test_run_string():
-  assert Container.run("alpine", ["echo", "test"]) == "test"
+def test_run_string(docker_sidecar):
+  result = docker_sidecar("alpine", command=["echo", "test"], detach=False)
+
+  assert result == "test"
 
 
-def test_run_container():
-  result = Container.run("alpine", detach=True)
+def test_run_container(docker_sidecar):
+  result = docker_sidecar("alpine", detach=True)
 
   assert isinstance(result, Container)
 
 
-def test_ip_via_hostname():
-  container = Container.run("alpine", ["sleep", "infinity"], detach=True)
+def test_ip_via_hostname(docker_sidecar):
+  container = docker_sidecar(
+    "alpine", command=["sleep", "infinity"], detach=True
+  )
 
   ip = container.ip()
 
@@ -24,8 +28,10 @@ def test_ip_via_hostname():
   assert all(part.isdigit() for part in ip.split("."))
 
 
-def test_ip_fallback():
-  container = Container.run("minio/minio", ["server", "/data"], detach=True)
+def test_ip_fallback(docker_sidecar):
+  container = docker_sidecar(
+    "minio/minio", command=["server", "/data"], detach=True
+  )
 
   ip = container.ip()
 
@@ -33,8 +39,8 @@ def test_ip_fallback():
   assert all(part.isdigit() for part in ip.split("."))
 
 
-def test_readiness_timeout():
-  container = Container.run("alpine", detach=True)
+def test_readiness_timeout(docker_sidecar):
+  container = docker_sidecar("alpine", detach=True)
 
   readiness_check = ReadinessCheck(
     container, HttpProbe(host="http://unreachable", timeout=0.1)

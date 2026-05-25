@@ -1,5 +1,5 @@
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from kloudkit.testshed.docker.probes.probe import Probe
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 @dataclass(slots=True)
 class LogProbe(Probe):
-  pattern: str = ""
+  pattern: str = field(kw_only=True)
 
   def check(self, container: "Container") -> None:
     """Single probe attempt. Raise on failure."""
