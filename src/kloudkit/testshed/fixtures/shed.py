@@ -45,11 +45,12 @@ def shed_factory(shed_tag, docker_sidecar, shed_container_defaults):
     probe = Probe.resolve(
       default=shed_container_defaults.get("probe"),
       user=kwargs.pop("probe", ...),
-      port=kwargs.pop("port", None),
+      timeout=kwargs.pop("timeout", None),
     )
 
     merged_config = {**shed_container_defaults, **kwargs}
     merged_config.pop("probe", None)
+    merged_config.pop("timeout", None)
 
     if probe is not None:
       merged_config["probe"] = probe

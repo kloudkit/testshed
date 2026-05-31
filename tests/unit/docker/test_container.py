@@ -26,7 +26,9 @@ def test_container_repr_subclass_name():
 
   native = SimpleNamespace(id="abcdef012345", name="demo")
 
-  assert repr(_WSContainer(native)) == "_WSContainer(name='demo', id='abcdef01')"
+  assert (
+    repr(_WSContainer(native)) == "_WSContainer(name='demo', id='abcdef01')"
+  )
 
 
 def test_container_repr_falls_back_to_wrapped_repr():

@@ -210,6 +210,15 @@ def test_db(docker_sidecar):
 You can also set a default for every `shed` container via the
 `shed_container_defaults` fixture (`probe=...`).
 
+To wait longer without restating the probe, pass `timeout=` — it overlays
+onto the resolved probe, keeping the default's type and other fields:
+
+```python
+@shed_config(timeout=90.0)
+def test_slow_boot(shed):
+  ...
+```
+
 ### Playwright browser testing
 
 Get a Playwright browser instance running in Docker via `playwright_browser`:

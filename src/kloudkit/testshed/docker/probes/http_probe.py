@@ -1,5 +1,5 @@
-from dataclasses import asdict, dataclass, replace
-from typing import TYPE_CHECKING, Self
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from kloudkit.testshed.docker.probes.probe import Probe
 
@@ -34,13 +34,3 @@ class HttpProbe(Probe):
     """Message shown on timeout."""
 
     return f"URL [{self.url}] was not reachable within {self.timeout}s"
-
-  def merge(self, other: "HttpProbe", *, ignore_none: bool = True) -> Self:
-    """Merge two Probes."""
-
-    if not ignore_none:
-      return replace(self, **asdict(other))
-
-    overlay = {k: v for k, v in asdict(other).items() if v is not None}
-
-    return replace(self, **overlay)
