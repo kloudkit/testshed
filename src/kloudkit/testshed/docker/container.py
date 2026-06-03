@@ -2,6 +2,7 @@ from python_on_whales import Container as NativeContainer, docker
 
 from kloudkit.testshed.core.wrapper import Wrapper
 from kloudkit.testshed.docker.runtime.file_system import FileSystem
+from kloudkit.testshed.docker.runtime.process import Process
 from kloudkit.testshed.docker.runtime.shell import Shell
 
 
@@ -33,6 +34,12 @@ class Container(Wrapper[NativeContainer]):
     """Higher order file system."""
 
     return FileSystem(self)
+
+  @property
+  def proc(self) -> Process:
+    """Higher order process inspection."""
+
+    return Process(self)
 
   @property
   def execute(self) -> Shell:
