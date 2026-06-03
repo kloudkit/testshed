@@ -4,15 +4,8 @@ from kloudkit.testshed.core.wrapper import Wrapper
 
 
 class Process(Wrapper["Container"]):
-  """Higher order process inspection backed by `/proc`."""
-
   def pids(self, name: str) -> tuple[int, ...]:
-    """
-    Retrieve PIDs whose process name exactly matches `name`.
-
-    Matches against `/proc/<pid>/comm`, which the kernel truncates to 15
-    characters, mirroring `pgrep -x`.
-    """
+    """Retrieve PIDs whose process name exactly matches `name`."""
 
     output = self._wrapped.execute(
       f"grep -Flx {shlex.quote(name)} /proc/[0-9]*/comm 2>/dev/null || true"

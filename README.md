@@ -1,14 +1,24 @@
 # KloudKIT TestShed
 
-A pytest plugin for integration testing with Docker and Playwright.
-It handles container lifecycle, browser provisioning, and cleanup automatically.
+Integration tests need real services (a database, an API, a browser), not mocks.
+Standing those up by hand means boilerplate container code in `conftest.py`,
+flaky startup races, and leftover containers when a test crashes.
+
+TestShed is a pytest plugin that hands you a running Docker container (or a
+Playwright browser) as a fixture. You ask for `shed`, you get a live container;
+the plugin builds or pulls the image, waits for readiness, and tears everything
+down when the test ends.
 
 ## Features
 
-- **Docker management:** provision and control containers from tests.
-- **Playwright integration:** browser testing against a Playwright sidecar container.
-- **Configurable via markers & CLI:** tune environments per test or suite.
-- **Automatic cleanup:** containers and volumes are removed after tests.
+- **Containers as fixtures:** request `shed` (or `docker_sidecar`) and run
+  commands, read files, and inspect processes inside a real container.
+- **Playwright browsers:** drive a browser running in a Playwright sidecar
+  container.
+- **Per-test configuration:** set env vars, volumes, and readiness probes with
+  markers, or defaults for the whole suite via CLI.
+- **Lifecycle handled:** images are resolved up front; containers and volumes are
+  removed when the test finishes, even on failure.
 
 ## Requirements
 
@@ -49,13 +59,17 @@ pytest
 ```
 
 The fixtures (`shed`, `docker_sidecar`, `playwright_browser`, ...) are auto-registered
-whenever `--shed` is set — no `conftest.py` import required.
+whenever `--shed` is set, with no `conftest.py` import required.
 
 ## Usage
 
 ### Docker container testing
 
-TestShed provides fixtures to manage containers inside your tests.
+The `shed` fixture is the main entry point. By default it returns a **shared
+container** (`shed_default`) reused across tests that don't override anything —
+fast, because the container starts once. Apply a marker (env, volume, config, or
+`@shed_mutable()`) and `shed` instead gives that test its own dedicated
+container.
 
 #### Configure containers with decorators
 
@@ -113,7 +127,7 @@ def shed_container_defaults():
   }
 
 def test_my_app(shed):
-  # Uses your configured defaults automatically
+  # Picks up your configured defaults.
   assert shed.execute("whoami") == "app"
 
 @shed_env(DEBUG="true")
@@ -131,7 +145,7 @@ setup, runtime parameterization, or spinning up multiple containers in a single 
 ```python
 @shed_env(APP_PORT="3000")
 def test_deferred_deployment(shed_deferred):
-  # Container is NOT running yet — do setup here
+  # Container is NOT running yet; do setup here
   # ...
 
   # Deploy with optional call-time overrides
@@ -156,22 +170,74 @@ Call-time parameters merge with decorator config:
 
 #### Basic Docker container
 
-For a lower-level API, use the `docker_sidecar` fixture:
+For a lower-level API, use the `docker_sidecar` fixture, which launches a
+container directly from any image:
 
 ```python
 def test_my_docker_app(docker_sidecar):
-  # Launch a container
   nginx = docker_sidecar("nginx:latest", publish=[(8080, 80)])
 
-  # Execute a command inside the container
-  hostname = nginx.execute("cat /etc/hostname")
-  assert len(hostname) > 0
-
-  # Access the container's IP
+  # The container's internal IP.
   print(f"Container IP: {nginx.ip()}")
+```
 
-  # Interact with the file system
-  assert "html" in nginx.fs.ls("/usr/share/nginx")
+#### Interacting with a container
+
+Every container TestShed returns (`shed`, `docker_sidecar`, and friends) exposes
+the same three helpers for poking at its runtime: `execute`, `fs`, and `proc`.
+
+**`execute`: run commands.** Call it directly to use the container's default
+shell, or pick one explicitly. Pass `raises=True` to fail the test on a non-zero
+exit, and `user=` to run as another user:
+
+```python
+def test_commands(shed):
+  # Default shell; output is returned stripped.
+  assert shed.execute("echo hello") == "hello"
+
+  # Specific shells.
+  shed.execute.bash("set -o pipefail; cat /etc/os-release | head -1")
+  shed.execute.sh(["echo", "portable"])
+  shed.execute.zsh("print -r -- $ZSH_VERSION")
+
+  # Raise on failure instead of returning, and run as a given user.
+  shed.execute("test -f /etc/hostname", raises=True)
+  assert shed.execute("whoami", user="nobody") == "nobody"
+```
+
+**`fs`: read the file system.** Check existence, list directories, and read
+files as text, bytes, JSON, or YAML:
+
+```python
+def test_files(shed):
+  assert shed.fs.exists("/etc/hostname")
+
+  # List a directory (pass hidden=True to include dotfiles).
+  assert "hostname" in shed.fs.ls("/etc")
+
+  # Read contents. Calling fs directly is shorthand for fs.text(...).
+  assert "root" in shed.fs("/etc/passwd")
+  raw = shed.fs.bytes("/etc/hostname")
+  config = shed.fs.json("/app/config.json")
+  manifest = shed.fs.yaml("/app/manifest.yaml")
+
+  # File mode, as an octal string.
+  assert shed.fs.mode("/etc/hostname") == "644"
+```
+
+**`proc`: inspect processes.** Check what's running by command name, resolve
+PIDs, and read a process's command line or environment:
+
+```python
+def test_processes(shed):
+  assert shed.proc.running("nginx")
+  assert shed.proc.pids("nginx")  # tuple of matching PIDs
+
+  # Command line of the first match.
+  assert "nginx" in shed.proc.cmdline("nginx")
+
+  # Environment of a process (PID 1 by default).
+  assert shed.proc.environ()["PATH"]
 ```
 
 #### Readiness probes
@@ -210,7 +276,7 @@ def test_db(docker_sidecar):
 You can also set a default for every `shed` container via the
 `shed_container_defaults` fixture (`probe=...`).
 
-To wait longer without restating the probe, pass `timeout=` — it overlays
+To wait longer without restating the probe, pass `timeout=`; it overlays
 onto the resolved probe, keeping the default's type and other fields:
 
 ```python
@@ -245,24 +311,24 @@ In addition to the headline fixtures (`shed`, `shed_deferred`, `docker_sidecar`,
 | `shed_state`              | session  | Read-only access to the resolved `ShedState` (image, tag, network, paths).                                                     |
 | `shed_tag`                | session  | Fully qualified `image:tag` (or `image@sha256:...`) used for the session.                                                      |
 | `shed_default`            | session  | The shared default container that `shed` returns when no marker overrides apply.                                               |
-| `downloader`              | function | `downloader(url, "filename") -> Path` — fetch a URL into a `tmp_path` file.                                                    |
+| `downloader`              | function | `downloader(url, "filename") -> Path`: fetch a URL into a `tmp_path` file.                                                     |
 | `test_root`               | session  | Absolute path to the tests root.                                                                                               |
 | `project_root`            | session  | Absolute path to the project source root.                                                                                      |
 
 ### Command-line options
 
-| Flag                         | Default                                | Description                                                                                                        |
-| ---------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `--shed`                     | off                                    | Enable TestShed for the current test suite.                                                                        |
-| `--shed-image IMAGE`         | —                                      | Base image repository (e.g. `ghcr.io/acme/app`). Must **not** contain a tag or digest — use `--shed-tag` for that. |
-| `--shed-tag TAG\|SHA`        | `tests`                                | Image tag or digest (use a `sha256:...` for immutable builds).                                                     |
-| `--shed-build-context DIR`   | project root (pytest config directory) | Docker build context for the `build` / `rebuild` policies.                                                         |
-| `--shed-image-policy POLICY` | `pull`                                 | One of `pull`, `build`, `require`, `rebuild` (see below).                                                          |
-| `--shed-src-dir DIR`         | `src`                                  | Project source directory, relative to the pytest config.                                                           |
-| `--shed-stubs-dir DIR`       | `tests/stubs`                          | Directory of stub files (resolved by relative `@shed_volumes` sources).                                            |
-| `--shed-tests-dir DIR`       | `tests`                                | Tests root directory.                                                                                              |
-| `--shed-skip-bootstrap`      | off                                    | Skip Docker bootstrap (useful when running just the unit subset).                                                  |
-| `--shed-container-logs`      | off                                    | Dump container logs on failure.                                                                                    |
+| Flag                         | Default                                | Description                                                                                                       |
+| ---------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `--shed`                     | off                                    | Enable TestShed for the current test suite.                                                                       |
+| `--shed-image IMAGE`         | —                                      | Base image repository (e.g. `ghcr.io/acme/app`). Must **not** contain a tag or digest; use `--shed-tag` for that. |
+| `--shed-tag TAG\|SHA`        | `tests`                                | Image tag or digest (use a `sha256:...` for immutable builds).                                                    |
+| `--shed-build-context DIR`   | project root (pytest config directory) | Docker build context for the `build` / `rebuild` policies.                                                        |
+| `--shed-image-policy POLICY` | `pull`                                 | One of `pull`, `build`, `require`, `rebuild` (see below).                                                         |
+| `--shed-src-dir DIR`         | `src`                                  | Project source directory, relative to the pytest config.                                                          |
+| `--shed-stubs-dir DIR`       | `tests/stubs`                          | Directory of stub files (resolved by relative `@shed_volumes` sources).                                           |
+| `--shed-tests-dir DIR`       | `tests`                                | Tests root directory.                                                                                             |
+| `--shed-skip-bootstrap`      | off                                    | Skip Docker bootstrap (useful when running just the unit subset).                                                 |
+| `--shed-container-logs`      | off                                    | Dump container logs on failure.                                                                                   |
 
 > [!NOTE]
 > When TestShed is installed globally, you must explicitly enable it per suite with
@@ -281,15 +347,15 @@ The `--shed-image-policy` option controls how TestShed acquires Docker images:
 #### Examples
 
 ```sh
-# Enable TestShed for your suite
+# Rebuild the image, then run the suite against it.
 pytest --shed --shed-image my-test-image --shed-image-policy rebuild
 
-# Run tests without TestShed (default)
-pytestpip install /workspace/kloudkit/testshed
+# Omit --shed and the plugin stays dormant: a plain pytest run.
+pytest
 ```
 
 ### Parallel execution
 
-`pytest -n auto` (pytest-xdist) is supported out of the box. The Docker network
+`pytest -n auto` (pytest-xdist) works without extra setup. The Docker network
 and container labels are namespaced by `PYTEST_XDIST_WORKER`, so workers don't
 collide and each worker's containers are cleaned up independently.
