@@ -1,9 +1,11 @@
 import shlex
 
 from kloudkit.testshed.core.wrapper import Wrapper
+from kloudkit.testshed.docker.runtime.error_handler import error_handler
 
 
 class Process(Wrapper["Container"]):
+  @error_handler
   def pids(self, name: str) -> tuple[int, ...]:
     """Retrieve PIDs whose process name exactly matches `name`."""
 
@@ -18,6 +20,7 @@ class Process(Wrapper["Container"]):
 
     return bool(self.pids(name))
 
+  @error_handler
   def cmdline(self, name: str) -> str:
     """Retrieve the space-joined command line of the first `name` match."""
 
@@ -28,6 +31,7 @@ class Process(Wrapper["Container"]):
 
     return self._wrapped.execute(f"tr '\\0' ' ' < /proc/{pids[0]}/cmdline")
 
+  @error_handler
   def environ(self, pid: int = 1) -> dict[str, str]:
     """Retrieve the environment of `pid` as a dict."""
 

@@ -29,6 +29,11 @@ class Container(Wrapper[NativeContainer]):
         else settings.ip_address
       )
 
+  def whoami(self) -> str:
+    """Retrieve the current user inside the container."""
+
+    return self.execute(["whoami"], raises=True)
+
   @property
   def fs(self) -> FileSystem:
     """Higher order file system."""

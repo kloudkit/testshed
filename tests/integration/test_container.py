@@ -39,6 +39,14 @@ def test_ip_fallback(docker_sidecar):
   assert all(part.isdigit() for part in ip.split("."))
 
 
+def test_whoami(docker_sidecar):
+  container = docker_sidecar(
+    "alpine", command=["sleep", "infinity"], detach=True
+  )
+
+  assert container.whoami() == "root"
+
+
 def test_readiness_timeout(docker_sidecar):
   container = docker_sidecar(
     "alpine", command=["sleep", "infinity"], detach=True

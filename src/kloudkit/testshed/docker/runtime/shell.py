@@ -7,11 +7,6 @@ from kloudkit.testshed.docker.runtime.error_handler import error_handler
 
 
 class Shell(Wrapper[NativeContainer]):
-  def _get(self, name: str, default=None):
-    """Get argument with fallback to default."""
-
-    return getattr(self._args, name, default)
-
   @error_handler
   def _execute(
     self,

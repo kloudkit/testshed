@@ -12,6 +12,11 @@ class Wrapper(Generic[T]):
     self._wrapped: T = wrapped
     self._args = SimpleNamespace(**kwargs)
 
+  def _get(self, name: str, default: Any = None) -> Any:
+    """Get a stored keyword argument with a fallback default."""
+
+    return getattr(self._args, name, default)
+
   def __getattr__(self, name: str) -> Any:
     """Delegate lookups to the wrapped object."""
 

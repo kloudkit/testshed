@@ -55,10 +55,25 @@ class FileSystem(Wrapper["Container"]):
     return tuple(self._wrapped.execute(["\\ls", flags, str(path)]).splitlines())
 
   @error_handler
+  def _stat(self, path: str | Path, fmt: str) -> str:
+    """Retrieve a `stat` format field for a given path."""
+
+    return self._wrapped.execute(["stat", "-c", fmt, str(path)]).strip()
+
   def mode(self, path: str | Path) -> str:
     """Retrieve the file or directory mode for a given path."""
 
-    return self._wrapped.execute(["stat", "-c", "%a", str(path)]).strip()
+    return self._stat(path, "%a")
+
+  def owner(self, path: str | Path) -> str:
+    """Retrieve the owning user for a given path."""
+
+    return self._stat(path, "%U")
+
+  def group(self, path: str | Path) -> str:
+    """Retrieve the owning group for a given path."""
+
+    return self._stat(path, "%G")
 
   def __call__(self, path: str | Path) -> str:
     """Retrieve the content of a file for a given path."""

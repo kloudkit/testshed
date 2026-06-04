@@ -67,3 +67,13 @@ def test_mode(shed, path, mode):
   assert isinstance(actual_mode, str)
   assert actual_mode.isdigit()
   assert actual_mode == mode
+
+
+def test_ownership(shed):
+  assert shed.fs.owner("/etc/hostname") == "root"
+  assert shed.fs.group("/etc/hostname") == "root"
+
+
+def test_missing_file_fails_cleanly(shed):
+  with pytest.raises(pytest.fail.Exception):
+    shed.fs.bytes("/tmp/not-a-file")

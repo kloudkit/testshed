@@ -177,8 +177,8 @@ container directly from any image:
 def test_my_docker_app(docker_sidecar):
   nginx = docker_sidecar("nginx:latest", publish=[(8080, 80)])
 
-  # The container's internal IP.
-  print(f"Container IP: {nginx.ip()}")
+  # The container's internal IP and current user.
+  print(f"Container IP: {nginx.ip()}  user: {nginx.whoami()}")
 ```
 
 #### Interacting with a container
@@ -221,8 +221,10 @@ def test_files(shed):
   config = shed.fs.json("/app/config.json")
   manifest = shed.fs.yaml("/app/manifest.yaml")
 
-  # File mode, as an octal string.
+  # File mode (octal string), and ownership (user / group names).
   assert shed.fs.mode("/etc/hostname") == "644"
+  assert shed.fs.owner("/etc/hostname") == "root"
+  assert shed.fs.group("/etc/hostname") == "root"
 ```
 
 **`proc`: inspect processes.** Check what's running by command name, resolve
