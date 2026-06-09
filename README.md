@@ -168,6 +168,36 @@ Call-time parameters merge with decorator config:
 - **`volumes`:** concatenated *(call-time volumes added after decorator volumes)*.
 - **`**kwargs`:** passed as config args *(override decorator `@shed_config` values)*.
 
+#### Attach an existing container with `shed_attach`
+
+Use `shed_attach` to pull an **already-running, externally-managed** container
+into a test. The attached container exposes the full shed API (`.execute`, `.fs`,
+`.proc`, `.ip()`, `.whoami()`, ...). For the duration of the test it is connected
+to the shed network so it can reach the managed shed containers by name, and it is
+disconnected when the test ends. It is **never removed** — the test does not own it.
+
+```python
+def test_against_running_service(shed_attach):
+  db = shed_attach("my-postgres")
+
+  assert db.execute("pg_isready")
+
+
+def test_two_existing(shed_attach):
+  db = shed_attach("my-postgres")
+  cache = shed_attach("my-redis")
+
+
+def test_managed_plus_existing(shed, shed_attach):
+  external = shed_attach("legacy-app")
+
+  # `shed` is a managed container; both share the shed network.
+  assert shed.execute(["getent", "hosts", external.name])
+```
+
+The container must already be running, and the shed network must exist (i.e. do not
+combine this with `--shed-skip-bootstrap`).
+
 #### Basic Docker container
 
 For a lower-level API, use the `docker_sidecar` fixture, which launches a

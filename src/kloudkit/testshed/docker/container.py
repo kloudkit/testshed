@@ -89,3 +89,13 @@ class Container(Wrapper[NativeContainer]):
       return instance
 
     return cls(instance, container_logs=container_logs)
+
+  @classmethod
+  def attach(
+    cls, name_or_id: str, *, container_logs: bool = False
+  ) -> "Container":
+    """Wrap an existing, externally-managed container."""
+
+    instance = docker.container.inspect(name_or_id)
+
+    return cls(instance, container_logs=container_logs)
