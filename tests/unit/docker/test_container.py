@@ -1,6 +1,20 @@
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from kloudkit.testshed.docker.container import Container
+
+
+def test_attach_wraps_existing_container():
+  native = SimpleNamespace(id="abcdef012345", name="demo")
+
+  with patch(
+    "kloudkit.testshed.docker.container.docker.container.inspect",
+    return_value=native,
+  ) as inspect:
+    container = Container.attach("demo")
+
+  inspect.assert_called_once_with("demo")
+  assert container.wrapped is native
 
 
 def test_container_repr_uses_name_and_short_id():
