@@ -11,11 +11,10 @@ def test_attach_wraps_existing_container():
     "kloudkit.testshed.docker.container.docker.container.inspect",
     return_value=native,
   ) as inspect:
-    container = Container.attach("demo", container_logs=True)
+    container = Container.attach("demo")
 
   inspect.assert_called_once_with("demo")
   assert container.wrapped is native
-  assert container._get("container_logs") is True
 
 
 def test_container_repr_uses_name_and_short_id():
