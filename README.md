@@ -355,6 +355,7 @@ In addition to the headline fixtures (`shed`, `shed_deferred`, `docker_sidecar`,
 | `--shed-image IMAGE`         | —                                      | Base image repository (e.g. `ghcr.io/acme/app`). Must **not** contain a tag or digest; use `--shed-tag` for that. |
 | `--shed-tag TAG\|SHA`        | `tests`                                | Image tag or digest (use a `sha256:...` for immutable builds).                                                    |
 | `--shed-build-context DIR`   | project root (pytest config directory) | Docker build context for the `build` / `rebuild` policies.                                                        |
+| `--shed-dockerfile FILE`     | `Dockerfile`                           | Dockerfile path (relative to the build context) for the `build` / `rebuild` policies.                             |
 | `--shed-image-policy POLICY` | `pull`                                 | One of `pull`, `build`, `require`, `rebuild` (see below).                                                         |
 | `--shed-src-dir DIR`         | `src`                                  | Project source directory, relative to the pytest config.                                                          |
 | `--shed-stubs-dir DIR`       | `tests/stubs`                          | Directory of stub files (resolved by relative `@shed_volumes` sources).                                           |
