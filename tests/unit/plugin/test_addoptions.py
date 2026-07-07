@@ -10,7 +10,7 @@ def test_all_options_registered():
 
   pytest_addoption(parser)
 
-  assert parser.addoption.call_count == 10
+  assert parser.addoption.call_count == 11
 
   option_names = [c.args[0] for c in parser.addoption.call_args_list]
 
@@ -19,6 +19,7 @@ def test_all_options_registered():
     "--shed-image",
     "--shed-tag",
     "--shed-build-context",
+    "--shed-dockerfile",
     "--shed-image-policy",
     "--shed-src-dir",
     "--shed-stubs-dir",
@@ -65,7 +66,7 @@ def test_shed_image_policy_choices():
   assert calls["--shed-image-policy"]["default"] == "pull"
 
 
-def test_shed_dir_defaults():
+def test_shed_path_defaults():
   parser = Mock(spec=pytest.Parser)
 
   pytest_addoption(parser)
@@ -75,6 +76,7 @@ def test_shed_dir_defaults():
   assert calls["--shed-src-dir"]["default"] == "src"
   assert calls["--shed-stubs-dir"]["default"] == "tests/stubs"
   assert calls["--shed-tests-dir"]["default"] == "tests"
+  assert calls["--shed-dockerfile"]["default"] == "Dockerfile"
 
 
 def test_boolean_options_are_store_true():

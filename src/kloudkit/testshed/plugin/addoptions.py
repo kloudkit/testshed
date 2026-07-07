@@ -36,6 +36,14 @@ def pytest_addoption(parser: pytest.Parser) -> None:
   )
 
   parser.addoption(
+    "--shed-dockerfile",
+    action="store",
+    default="Dockerfile",
+    metavar="FILE",
+    help="Dockerfile path relative to the build context.",
+  )
+
+  parser.addoption(
     "--shed-image-policy",
     action="store",
     choices=["pull", "build", "require", "rebuild"],

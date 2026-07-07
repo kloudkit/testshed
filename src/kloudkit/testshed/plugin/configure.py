@@ -56,4 +56,5 @@ def pytest_configure(config: pytest.Config) -> None:
     state.image_and_tag,
     policy=config.getoption("shed_image_policy"),
     context_path=context_path,
+    dockerfile=config.getoption("shed_dockerfile"),
   )

@@ -6,10 +6,11 @@ from python_on_whales import docker
 import pytest
 
 
-def _build(image: str, context_path: Path) -> None:
+def _build(image: str, context_path: Path, dockerfile: str) -> None:
   print(f"Building image [{image}]")
   docker.build(
     context_path=context_path,
+    file=Path(context_path) / dockerfile,
     pull=True,
     progress="plain",
     tags=image,
@@ -28,6 +29,7 @@ def init_shed_image(
   *,
   policy: Literal["pull", "build", "require", "rebuild"],
   context_path: Path,
+  dockerfile: str = "Dockerfile",
 ) -> None:
   """Acquire the Docker image based on the specified policy."""
 
@@ -40,10 +42,10 @@ def init_shed_image(
 
     case "build":
       if not image_exists:
-        _build(image, context_path)
+        _build(image, context_path, dockerfile)
 
     case "rebuild":
-      _build(image, context_path)
+      _build(image, context_path, dockerfile)
 
     case "pull":
       if image_exists:
@@ -55,4 +57,4 @@ def init_shed_image(
         docker.pull(image)
       except Exception as e:
         print(f"Pull failed ({e})")
-        _build(image, context_path)
+        _build(image, context_path, dockerfile)
