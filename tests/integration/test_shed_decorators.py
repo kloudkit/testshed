@@ -35,7 +35,7 @@ def test_volume_with_inline_volume(shed):
   )
 )
 def test_volume_with_remote_volume(shed):
-  assert "# KloudKIT TestShed" in shed.execute(["cat", "/test/readme.md"])
+  assert "# KloudKIT • TestShed" in shed.execute(["cat", "/test/readme.md"])
 
 
 @shed_config(workdir="/tmp")

@@ -1,6 +1,11 @@
 ![TestShed — the support crew for your test bench by KloudKIT](https://raw.githubusercontent.com/kloudkit/testshed/main/brand/testshed-banner.svg)
 
-# KloudKIT TestShed
+# KloudKIT • TestShed
+
+[![Stars](https://img.shields.io/github/stars/kloudkit/testshed?style=for-the-badge&logo=git&logoColor=c6d0f5&labelColor=414559&color=f0c6c6)](https://github.com/kloudkit/testshed/stargazers)
+[![PyPI](https://img.shields.io/pypi/v/testshed?style=for-the-badge&logo=pypi&logoColor=c6d0f5&label=pypi&labelColor=414559&color=ef9f76)](https://pypi.org/project/testshed/)
+[![Build](https://img.shields.io/github/actions/workflow/status/kloudkit/testshed/test.yaml?style=for-the-badge&logo=githubactions&logoColor=c6d0f5&label=build&labelColor=414559&color=a6da95)](https://github.com/kloudkit/testshed/actions/workflows/test.yaml)
+[![License](https://img.shields.io/github/license/kloudkit/testshed?style=for-the-badge&logo=opensourceinitiative&logoColor=c6d0f5&labelColor=414559&color=8caaee)](https://github.com/kloudkit/testshed/blob/main/LICENSE)
 
 Integration tests need real services (a database, an API, a browser), not mocks.
 Standing those up by hand means boilerplate container code in `conftest.py`,
@@ -68,10 +73,10 @@ whenever `--shed` is set, with no `conftest.py` import required.
 ### Docker container testing
 
 The `shed` fixture is the main entry point. By default it returns a **shared
-container** (`shed_default`) reused across tests that don't override anything —
-fast, because the container starts once. Apply a marker (env, volume, config, or
-`@shed_mutable()`) and `shed` instead gives that test its own dedicated
-container.
+container** (`shed_default`) reused across tests that don't override anything,
+which is fast because the container starts once. Apply a marker (env, volume,
+config, or `@shed_mutable()`) and `shed` instead gives that test its own
+dedicated container.
 
 #### Configure containers with decorators
 
@@ -176,7 +181,7 @@ Use `shed_attach` to pull an **already-running, externally-managed** container
 into a test. The attached container exposes the full shed API (`.execute`, `.fs`,
 `.proc`, `.ip()`, `.whoami()`, ...). For the duration of the test it is connected
 to the shed network so it can reach the managed shed containers by name, and it is
-disconnected when the test ends. It is **never removed** — the test does not own it.
+disconnected when the test ends. It is **never removed**; the test does not own it.
 
 ```python
 def test_against_running_service(shed_attach):
@@ -398,7 +403,7 @@ collide and each worker's containers are cleaned up independently.
 ## License
 
 Released under the [**MIT License**](https://github.com/kloudkit/testshed/blob/main/LICENSE),
-**except** the [`brand/`](brand) directory.
+**except** the [`brand/`](https://github.com/kloudkit/testshed/tree/main/brand) directory.
 
 The TestShed and KloudKIT logos, icons and other brand assets are proprietary and
-**all rights reserved**; see [`brand/LICENSE`](brand/LICENSE).
+**all rights reserved**; see [`brand/LICENSE`](https://github.com/kloudkit/testshed/blob/main/brand/LICENSE).
