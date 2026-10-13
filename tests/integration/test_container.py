@@ -29,9 +29,7 @@ def test_ip_via_hostname(docker_sidecar):
 
 
 def test_ip_fallback(docker_sidecar):
-  container = docker_sidecar(
-    "minio/minio", command=["server", "/data"], detach=True
-  )
+  container = docker_sidecar("registry.k8s.io/pause:3.10", detach=True)
 
   ip = container.ip()
 
