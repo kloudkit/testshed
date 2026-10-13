@@ -1,3 +1,5 @@
+![TestShed — the support crew for your test bench by KloudKIT](https://raw.githubusercontent.com/kloudkit/testshed/main/brand/testshed-banner.svg)
+
 # KloudKIT TestShed
 
 Integration tests need real services (a database, an API, a browser), not mocks.
@@ -392,3 +394,11 @@ pytest
 `pytest -n auto` (pytest-xdist) works without extra setup. The Docker network
 and container labels are namespaced by `PYTEST_XDIST_WORKER`, so workers don't
 collide and each worker's containers are cleaned up independently.
+
+## License
+
+Released under the [**MIT License**](https://github.com/kloudkit/testshed/blob/main/LICENSE),
+**except** the [`brand/`](brand) directory.
+
+The TestShed and KloudKIT logos, icons and other brand assets are proprietary and
+**all rights reserved**; see [`brand/LICENSE`](brand/LICENSE).
