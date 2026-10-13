@@ -4,11 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "testshed"
-description = "🛠️ PyTest's tool shed: Docker up, Playwright on, cleanup done"
+description = "🧪 The support crew for your test bench"
 requires-python = ">=3.11"
 authors = [{ name = "Dov Benyomin Sohacheski", email = "b@kloud.email" }]
 license = "MIT"
-keywords = ["pytest", "docker", "fixtures", "playwright", "testing"]
+keywords = [
+  "kloudkit",
+  "pytest",
+  "pytest-plugin",
+  "docker",
+  "playwright",
+  "integration-testing",
+  "testing",
+  "python",
+]
 classifiers = [
   "Framework :: Pytest",
   "Operating System :: OS Independent",
