@@ -30,12 +30,12 @@ def test_volume_with_inline_volume(shed):
 
 @shed_volumes(
   RemoteVolume(
-    "/test/readme.md",
-    "https://raw.githubusercontent.com/kloudkit/testshed/main/README.md",
+    "/test/LICENSE",
+    "https://raw.githubusercontent.com/kloudkit/testshed/main/LICENSE",
   )
 )
 def test_volume_with_remote_volume(shed):
-  assert "# KloudKIT • TestShed" in shed.execute(["cat", "/test/readme.md"])
+  assert "MIT License" in shed.execute(["cat", "/test/LICENSE"])
 
 
 @shed_config(workdir="/tmp")
