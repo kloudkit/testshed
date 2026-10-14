@@ -1,0 +1,68 @@
+---
+name: 🧪 CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/**
+      - LICENSE
+      - README.md
+      - pyproject.toml
+      - src/**
+      - tests/**
+      - uv.lock
+  pull_request:
+    paths:
+      - .github/workflows/**
+      - LICENSE
+      - README.md
+      - pyproject.toml
+      - src/**
+      - tests/**
+      - uv.lock
+  workflow_call:
+
+permissions:
+  contents: read
+
+# Prefixed, because a called workflow shares its caller's name and the two would wait on each other.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v7
+
+      - name: 🕶 Install uv
+        uses: astral-sh/setup-uv@v10.2.0
+
+      - name: 🧪 Run tests with coverage
+        run: |
+          uv sync --group dev
+          uv run coverage run -m pytest --shed --shed-image=debian --shed-tag=13
+          uv run coverage report --show-missing
+
+  build:
+    name: 📦 Build (dry run)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v7
+
+      - name: 🕶 Install uv
+        uses: astral-sh/setup-uv@v10.2.0
+
+      - name: 🏗️ Build package
+        run: uv build
+
+      - name: 🔍 Check the package and its PyPI page
+        run: uvx twine check --strict dist/*

@@ -4,7 +4,7 @@
 
 [![Stars](https://img.shields.io/github/stars/kloudkit/testshed?style=for-the-badge&logo=git&logoColor=c6d0f5&labelColor=414559&color=f0c6c6)](https://github.com/kloudkit/testshed/stargazers)
 [![PyPI](https://img.shields.io/pypi/v/testshed?style=for-the-badge&logo=pypi&logoColor=c6d0f5&label=pypi&labelColor=414559&color=ef9f76)](https://pypi.org/project/testshed/)
-[![Build](https://img.shields.io/github/actions/workflow/status/kloudkit/testshed/test.yaml?style=for-the-badge&logo=githubactions&logoColor=c6d0f5&label=build&labelColor=414559&color=a6da95)](https://github.com/kloudkit/testshed/actions/workflows/test.yaml)
+[![Build](https://img.shields.io/github/actions/workflow/status/kloudkit/testshed/ci.yaml?style=for-the-badge&logo=githubactions&logoColor=c6d0f5&label=build&labelColor=414559&color=a6da95)](https://github.com/kloudkit/testshed/actions/workflows/ci.yaml)
 [![License](https://img.shields.io/github/license/kloudkit/testshed?style=for-the-badge&logo=opensourceinitiative&logoColor=c6d0f5&labelColor=414559&color=8caaee)](https://github.com/kloudkit/testshed/blob/main/LICENSE)
 
 Integration tests need real services (a database, an API, a browser), not mocks.
