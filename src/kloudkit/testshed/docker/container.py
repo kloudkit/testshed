@@ -1,3 +1,5 @@
+from typing import Callable
+
 from python_on_whales import Container as NativeContainer, docker
 
 from kloudkit.testshed.core.wrapper import Wrapper
@@ -92,7 +94,10 @@ class Container(Wrapper[NativeContainer]):
 
   @classmethod
   def attach(
-    cls, name_or_id: str, *, container_logs: bool = False
+    cls,
+    name_or_id: str,
+    *,
+    container_logs: Callable[[str], None] | None = None,
   ) -> "Container":
     """Wrap an existing, externally-managed container."""
 

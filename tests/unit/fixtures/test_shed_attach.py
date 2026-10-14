@@ -50,3 +50,17 @@ def test_attach_skips_when_already_connected(request_mock, state):
 
   docker.network.connect.assert_not_called()
   request_mock.addfinalizer.assert_not_called()
+
+
+def test_attach_passes_the_log_printer(request_mock, state):
+  state.container_logs = Mock()
+  container_class = Mock(
+    attach=Mock(return_value=_container(networks={"shed-net": object()}))
+  )
+
+  with patch("kloudkit.testshed.fixtures.attach.docker"):
+    _make_attach(request_mock, state, container_class)("svc")
+
+  container_class.attach.assert_called_once_with(
+    "svc", container_logs=state.container_logs
+  )

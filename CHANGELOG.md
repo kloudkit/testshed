@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🏷️ Use the GitHub tagline as the PyPI summary, and the repo topics as keywords
 - 📝 Document `--shed-dockerfile` in the command-line options table
 
+### Fixed
+
+- 📜 Print an attached container's logs on failure with `--shed-container-logs`,
+  as other shed containers do
+
 ## [0.0.20] - 2026-07-07
 
 ### Added
