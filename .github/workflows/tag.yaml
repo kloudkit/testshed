@@ -13,32 +13,38 @@ permissions:
 
 jobs:
   tag:
+    name: 🔖 Tag
     runs-on: ubuntu-latest
+
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.KLOUD_BOT_ORG_PAT }}
+        uses: actions/checkout@v7
 
       - name: 🔢 Extract version from __init__.py
-        id: extract_version
+        id: version
         run: |-
           VERSION=$(grep -oP '__version__ = "\K[^"]+' src/kloudkit/testshed/__init__.py)
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
 
+      # ls-remote exits 0 when the tag exists and 2 when it doesn't; anything else is an error.
       - name: 🧪 Check if tag exists
-        id: check_tag
+        id: check
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
-          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION"; then
-            echo "Tag v$VERSION already exists on origin. Skipping."
-            exit 0
-          fi
+          rc=0
+          git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null || rc=$?
+
+          case $rc in
+            0) echo "Tag $TAG already exists on origin. Skipping."; echo "exists=true" >> "$GITHUB_OUTPUT" ;;
+            2) echo "exists=false" >> "$GITHUB_OUTPUT" ;;
+            *) exit "$rc" ;;
+          esac
 
       - name: 🔖 Create and push tag
-        run: |
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
+        if: steps.check.outputs.exists == 'false'
         env:
-          GITHUB_TOKEN: ${{ secrets.KLOUD_BOT_ORG_PAT }}
-          GITHUB_REF: refs/tags/v$VERSION
-          GITHUB_REPOSITORY: ${{ github.repository }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git tag "$TAG"
+          git push origin "$TAG"
