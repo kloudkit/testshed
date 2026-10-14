@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.22] - 2026-10-14
+
+### Changed
+
+- ⬆️ Update the locked dependencies, clearing the urllib3 and virtualenv advisories
+
 ## [0.0.21] - 2026-10-14
 
 ### Changed
@@ -162,7 +168,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   container factory
 - 💻 Pick a free host port for published ports
 
-[Unreleased]: https://github.com/kloudkit/testshed/compare/v0.0.21...HEAD
+[Unreleased]: https://github.com/kloudkit/testshed/compare/v0.0.22...HEAD
+[0.0.22]: https://github.com/kloudkit/testshed/releases/tag/v0.0.22
 [0.0.21]: https://github.com/kloudkit/testshed/releases/tag/v0.0.21
 [0.0.20]: https://github.com/kloudkit/testshed/releases/tag/v0.0.20
 [0.0.19]: https://github.com/kloudkit/testshed/releases/tag/v0.0.19
