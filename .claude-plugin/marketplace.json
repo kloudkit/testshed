@@ -1,0 +1,12 @@
+{
+  "name": "testshed",
+  "owner": { "name": "KloudKIT", "url": "https://github.com/kloudkit" },
+  "plugins": [
+    {
+      "name": "testshed",
+      "source": "./",
+      "description": "Write pytest tests against real Docker containers and Playwright browsers with TestShed.",
+      "category": "testing"
+    }
+  ]
+}

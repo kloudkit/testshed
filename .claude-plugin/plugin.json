@@ -1,0 +1,19 @@
+{
+  "name": "testshed",
+  "description": "Write pytest tests against real Docker containers and Playwright browsers with TestShed.",
+  "icon": "./brand/testshed-icon.png",
+  "author": {
+    "name": "KloudKIT",
+    "url": "https://github.com/kloudkit"
+  },
+  "homepage": "https://testshed.kloudkit.com",
+  "repository": "https://github.com/kloudkit/testshed",
+  "license": "MIT",
+  "keywords": [
+    "pytest",
+    "docker",
+    "playwright",
+    "testing",
+    "testshed"
+  ]
+}
