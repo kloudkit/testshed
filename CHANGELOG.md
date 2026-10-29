@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛 Grant clipboard permissions to the pages and contexts `playwright_browser` creates,
+  instead of to an unused context
+
 ## [0.0.22] - 2026-10-14
 
 ### Changed

@@ -1,8 +1,9 @@
 from typing import Generator
 
-from playwright.sync_api import Browser, sync_playwright
+from playwright.sync_api import sync_playwright
 
 from kloudkit.testshed.core.state import ShedState
+from kloudkit.testshed.playwright.browser import Browser
 from kloudkit.testshed.playwright.factory import Factory
 from kloudkit.testshed.utils.network import available_port
 
@@ -20,12 +21,6 @@ def playwright_browser(shed_state: ShedState) -> Generator[Browser, None, None]:
   factory(port=port)
 
   with sync_playwright() as p:
-    browser = p.chromium.connect(f"ws://127.0.0.1:{port}")
-
-    context = browser.new_context()
-
-    context.grant_permissions(["clipboard-read", "clipboard-write"])
-
-    yield browser
+    yield Browser(p.chromium.connect(f"ws://127.0.0.1:{port}"))
 
   factory.cleanup()
