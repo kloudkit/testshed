@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.23] - 2026-10-29
+
+### Added
+
+- ✨ Ship a TestShed Agent Skill, installable with `npx skills add kloudkit/testshed` or as a
+  Claude Code plugin
+
+### Changed
+
+- ⬆️ Update the locked dependencies
+
 ### Fixed
 
 - 🐛 Grant clipboard permissions to the pages and contexts `playwright_browser` creates,
@@ -173,7 +184,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   container factory
 - 💻 Pick a free host port for published ports
 
-[Unreleased]: https://github.com/kloudkit/testshed/compare/v0.0.22...HEAD
+[Unreleased]: https://github.com/kloudkit/testshed/compare/v0.0.23...HEAD
+[0.0.23]: https://github.com/kloudkit/testshed/releases/tag/v0.0.23
 [0.0.22]: https://github.com/kloudkit/testshed/releases/tag/v0.0.22
 [0.0.21]: https://github.com/kloudkit/testshed/releases/tag/v0.0.21
 [0.0.20]: https://github.com/kloudkit/testshed/releases/tag/v0.0.20
