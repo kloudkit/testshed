@@ -32,6 +32,8 @@ Fixtures and markers exist only when `--shed` is passed.
   package's version and connects to it on a published port at `127.0.0.1`, so the Docker
   daemon has to run where pytest runs, and the container has to reach the npm registry.
   One browser serves the session: open a page or context per test and close it.
+  Pages and contexts it opens get `clipboard-read` and `clipboard-write` on top of any
+  `permissions` you pass; `.wrapped` is the plain Playwright `Browser`.
 
 ## Settings and Paths
 
