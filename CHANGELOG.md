@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛 Fail with the exit code and the last lines of the logs when a container exits before
+  its probe passes, instead of `No such container`, by keeping detached containers until
+  cleanup
+
 ## [0.0.23] - 2026-10-29
 
 ### Added

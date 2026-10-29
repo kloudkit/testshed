@@ -204,7 +204,7 @@ pytest -n auto                                             # parallel, with pyte
 
 - **A failed command or probe:** rerun with `--shed-container-logs`. A probe timeout says what
   it waited for, such as `URL [http://localhost:8080/health] was not reachable within 30.0s`.
-- **A container to inspect:** while a session runs, `docker ps --filter
+- **A container to inspect:** while a session runs, `docker ps -a --filter
   label=com.kloudkit.testshed` lists its containers; `com.kloudkit.testshed.test` holds the
   test's node ID *(or `shed_default`)*.
 - **Tests that start no containers:** `--shed-skip-bootstrap` skips the image and the network,

@@ -1,4 +1,12 @@
-from kloudkit.testshed.docker import Container, HttpProbe, LogProbe, ShellProbe
+from kloudkit.testshed.docker import (
+  Container,
+  HttpProbe,
+  LogProbe,
+  ShellProbe,
+  docker,
+)
+
+import pytest
 
 
 def test_container_creation(docker_sidecar):
@@ -55,3 +63,27 @@ def test_alpine_with_shell_probe(docker_sidecar):
 
   assert isinstance(container, Container)
   assert container.execute(["cat", "/tmp/ready"]) == ""
+
+
+def test_container_exiting_before_ready_reports_code_and_logs(docker_sidecar):
+  with pytest.raises(pytest.fail.Exception) as error:
+    docker_sidecar(
+      image="alpine:latest",
+      command=["sh", "-c", "echo boom; exit 3"],
+      probe=ShellProbe(command="test -f /tmp/ready", timeout=30.0),
+    )
+
+  message = str(error.value)
+
+  assert "Container exited with code 3 before it was ready" in message
+  assert "boom" in message
+
+
+def test_detached_container_outlives_its_exit(docker_sidecar):
+  container = docker_sidecar(
+    image="alpine:latest", command=["sh", "-c", "echo done"]
+  )
+
+  docker.container.wait(container.wrapped)
+
+  assert container.logs() == "done\n"

@@ -34,7 +34,7 @@ class Factory:
 
     container = container_class.run(
       image,
-      remove=True,
+      remove=not detach,
       labels=self._prepare_labels(test_name),
       detach=detach,
       networks=kwargs.pop("networks", [self._state.network]),

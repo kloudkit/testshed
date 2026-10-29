@@ -96,6 +96,8 @@ Keep the class a dataclass, so it merges with a default probe of the same type.
 The test fails with the probe's message, such as
 `URL [http://localhost:8080/health] was not reachable within 30.0s`.
 Rerun with `--shed-container-logs` to see what the container printed.
+A container that exits first fails the test at once, with its exit code and the last 20 lines
+of its logs *(TestShed 0.0.24+; earlier versions report `No such container`)*.
 Common causes:
 
 - The image has no `curl` for `HttpProbe`.
