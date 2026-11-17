@@ -1,4 +1,3 @@
-import shlex
 from typing import Callable
 
 from python_on_whales import Container as NativeContainer, docker
@@ -7,13 +6,6 @@ from kloudkit.testshed.core.wrapper import Wrapper
 from kloudkit.testshed.docker.runtime.file_system import FileSystem
 from kloudkit.testshed.docker.runtime.process import Process
 from kloudkit.testshed.docker.runtime.shell import Shell
-
-
-_WHICH = (
-  "IFS=:; for dir in $PATH; do"
-  ' [ -f "$dir/$1" ] && [ -x "$dir/$1" ] && { echo "$dir/$1"; exit; };'
-  " done; exit 1"
-)
 
 
 class Container(Wrapper[NativeContainer]):
@@ -28,40 +20,28 @@ class Container(Wrapper[NativeContainer]):
   def ip(self) -> str:
     """Retrieve internal IP address of container."""
 
-    try:
-      return self.execute(["hostname", "-i"], raises=True)
-    except Exception:
-      settings = self._wrapped.network_settings
+    result = self.execute(["hostname", "-i"], check=False)
 
-      return (
-        next(iter(settings.networks.values())).ip_address
-        if settings.networks
-        else settings.ip_address
-      )
+    if result.ok:
+      return result.stdout
+
+    settings = self._wrapped.network_settings
+
+    return (
+      next(iter(settings.networks.values())).ip_address
+      if settings.networks
+      else settings.ip_address
+    )
 
   def whoami(self) -> str:
     """Retrieve the current user inside the container."""
 
     return self.execute(["whoami"], raises=True)
 
-  def which(self, name: str, **kwargs) -> str | None:
-    """Find the executable `name` on the shell's `PATH`, as `which` does."""
-
-    result = self.execute(
-      f"{self.SH_PATH} -c {shlex.quote(_WHICH)} sh {shlex.quote(name)}",
-      check=False,
-      **kwargs,
-    )
-
-    return result.stdout if result.ok else None
-
   def env(self, name: str | None = None, **kwargs) -> dict | str | None:
     """Retrieve the environment commands see, after shell activation."""
 
-    raw = self.execute("cat /proc/self/environ", **kwargs)
-    environ = dict(
-      entry.partition("=")[::2] for entry in raw.split("\0") if entry
-    )
+    environ = self.proc.environ("self", **kwargs)
 
     return environ if name is None else environ.get(name)
 

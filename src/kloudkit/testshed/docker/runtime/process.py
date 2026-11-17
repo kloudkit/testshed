@@ -10,8 +10,8 @@ class Process(Wrapper["Container"]):
     """Retrieve PIDs whose process name exactly matches `name`."""
 
     output = self._wrapped.execute(
-      f"grep -Flx {shlex.quote(name)} /proc/[0-9]*/comm 2>/dev/null || true"
-    )
+      f"grep -Flx {shlex.quote(name)} /proc/[0-9]*/comm", check=False
+    ).stdout
 
     return tuple(int(line.split("/")[2]) for line in output.splitlines())
 
@@ -32,9 +32,9 @@ class Process(Wrapper["Container"]):
     return self._wrapped.execute(f"tr '\\0' ' ' < /proc/{pids[0]}/cmdline")
 
   @error_handler
-  def environ(self, pid: int = 1) -> dict[str, str]:
+  def environ(self, pid: int | str = 1, **kwargs) -> dict[str, str]:
     """Retrieve the environment of `pid` as a dict."""
 
-    raw = self._wrapped.execute(f"tr '\\0' '\\n' < /proc/{pid}/environ")
+    raw = self._wrapped.execute(f"cat /proc/{pid}/environ", **kwargs)
 
-    return dict(line.partition("=")[::2] for line in raw.splitlines())
+    return dict(entry.partition("=")[::2] for entry in raw.split("\0") if entry)

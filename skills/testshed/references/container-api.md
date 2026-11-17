@@ -92,9 +92,6 @@ To find a process by its full command line, use `pgrep -f` through `execute`.
 
 - **`ip()`:** the container's address on the session's network, for other containers.
 - **`whoami()`:** the user commands run as.
-- **`which(name)`:** path of the executable on the shell's `PATH`, or `None`; same answers as
-  `which` *(builtins resolve to their binary)*, without needing `which` in the image.
-  Use it instead of `command -v`.
 - **`env()` / `env(name)`:** the environment commands see *(dict, or one value, `None` when
   unset)*, including what the shell's profile exports. Use it instead of `echo $VAR`.
 - **`logs()`:** the container's output so far, as one string.

@@ -14,11 +14,7 @@ class FileSystem(Wrapper["Container"]):
   def exists(self, path: str | Path) -> bool:
     """Check if a file or directory exists."""
 
-    result = self._wrapped.execute(
-      ["test", "-e", path, "&&", "echo", "yes", "||", "echo", "no"]
-    )
-
-    return "yes" in result
+    return self._wrapped.execute(["test", "-e", str(path)], check=False).ok
 
   def json(self, path: str | Path) -> dict:
     """Retrieve the content of a file as json."""

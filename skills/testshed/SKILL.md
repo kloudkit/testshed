@@ -150,7 +150,7 @@ Every container from every fixture has the same helpers: see
 5. **A failed command fails the test.** `execute` exits the test on a non-zero status, with the
    command's error output, so a bare `shed.execute("test -f /x")` is already an assertion.
    To expect a failure, use `raises=True` inside `pytest.raises(DockerException, match=...)`.
-   To read the output of a command that may fail, end it with `|| true`.
+   To read the exit code, output or stderr of a command that may fail, pass `check=False`.
 6. **Quote what you pass as a list.** A list is joined with spaces, unquoted, and run by the
    shell. Use `shlex.quote` for values with spaces or shell characters, or pass one string.
 7. **Wait with a probe, not `time.sleep`.** If the test asserts on something that happens

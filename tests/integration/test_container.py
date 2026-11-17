@@ -61,17 +61,6 @@ def test_readiness_timeout(docker_sidecar):
   assert "0.1s" in str(exc_info.value)
 
 
-def test_which_finds_executables_like_which(shed):
-  assert shed.which("sh") == shed.execute("which sh")
-  assert shed.which("echo") == "/usr/bin/echo"
-  assert shed.which("not-a-command") is None
-
-
-def test_which_uses_the_shell_path(shed):
-  assert shed.which("echo", envs={"PATH": "/nowhere:/bin"}) == "/bin/echo"
-  assert shed.which("echo", envs={"PATH": "/nowhere"}) is None
-
-
 def test_env_returns_the_shell_environment(shed):
   environ = shed.env(envs={"MULTI": "a\nb", "EMPTY": ""})
 
