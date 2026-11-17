@@ -23,5 +23,5 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v7
 
-      - name: 🧹 Run pre-commit
+      - name: 🧹 Run prek
         uses: j178/prek-action@v3.1.0
