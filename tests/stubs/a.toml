@@ -1,0 +1,4 @@
+hello = "world"
+
+[nested]
+answer = 42
