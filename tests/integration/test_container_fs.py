@@ -6,6 +6,7 @@ import pytest
 VOLUMES = [
   ("a.json", "/tmp/a.json"),
   ("a.yaml", "/tmp/a.yaml"),
+  ("a.toml", "/tmp/a.toml"),
   ("sample.txt", "/tmp/sample.txt"),
   (".hidden", "/tmp/.hidden"),
 ]
@@ -25,6 +26,22 @@ def test_json(shed):
 @shed_volumes(*VOLUMES)
 def test_yaml(shed):
   assert shed.fs.yaml("/tmp/a.yaml") == {"hello": "world"}
+
+
+@shed_volumes(*VOLUMES)
+def test_toml(shed):
+  assert shed.fs.toml("/tmp/a.toml") == {
+    "hello": "world",
+    "nested": {"answer": 42},
+  }
+
+
+def test_writable(shed):
+  shed.execute("touch /tmp/root-only && chmod 600 /tmp/root-only")
+
+  assert shed.fs.writable("/tmp")
+  assert shed.fs.writable("/tmp/root-only")
+  assert not shed.fs.writable("/tmp/root-only", user="nobody")
 
 
 @shed_volumes(*VOLUMES)

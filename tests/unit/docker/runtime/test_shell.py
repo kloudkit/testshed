@@ -89,3 +89,19 @@ def test_user_parameter_override():
 @pytest.mark.skip("@todo: fix long repl")
 def test_repr(mock_shell):
   assert repr(mock_shell) == ""
+
+
+def test_check_false_still_fails_on_missing_container(monkeypatch):
+  from python_on_whales.client_config import Command
+  from python_on_whales.exceptions import NoSuchContainer
+
+  gone = NoSuchContainer(["docker"], 1, b"", b"No such container: abc")
+  monkeypatch.setattr(
+    "kloudkit.testshed.docker.runtime.shell.run", Mock(side_effect=gone)
+  )
+  shell = Shell(
+    Mock(id="abc", docker_cmd=Command(["docker"])), sh_path="/bin/sh"
+  )
+
+  with pytest.raises(pytest.fail.Exception):
+    shell("true", check=False)

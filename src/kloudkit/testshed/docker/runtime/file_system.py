@@ -1,5 +1,6 @@
 import json
 import tempfile
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -13,11 +14,7 @@ class FileSystem(Wrapper["Container"]):
   def exists(self, path: str | Path) -> bool:
     """Check if a file or directory exists."""
 
-    result = self._wrapped.execute(
-      ["test", "-e", path, "&&", "echo", "yes", "||", "echo", "no"]
-    )
-
-    return "yes" in result
+    return self._wrapped.execute(["test", "-e", str(path)], check=False).ok
 
   def json(self, path: str | Path) -> dict:
     """Retrieve the content of a file as json."""
@@ -28,6 +25,18 @@ class FileSystem(Wrapper["Container"]):
     """Retrieve the content of a file as yaml."""
 
     return yaml.safe_load(self(path))
+
+  def toml(self, path: str | Path) -> dict:
+    """Retrieve the content of a file as toml."""
+
+    return tomllib.loads(self(path))
+
+  def writable(self, path: str | Path, **kwargs) -> bool:
+    """Check whether the command's user can write to a path."""
+
+    return self._wrapped.execute(
+      ["test", "-w", str(path)], check=False, **kwargs
+    ).ok
 
   def text(self, path: str | Path) -> str:
     """Retrieve the content of a file as text."""

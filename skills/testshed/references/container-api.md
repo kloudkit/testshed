@@ -2,7 +2,7 @@
 
 Every container TestShed gives you, from `shed`, `shed_deferred`, `docker_sidecar` or
 `shed_attach`, has the same helpers.
-The image needs the tools they call: a shell, `test`, `ls`, `stat`, `grep` and `tr`.
+The image needs the tools they call: a shell, `test`, `ls`, `stat`, `grep`, `tr` and `cat`.
 
 ## `execute`
 
@@ -38,16 +38,19 @@ def test_missing_file(shed):
     shed.execute("cat /nope", raises=True)
 ```
 
-- To read a status code or output without failing, end the command with `|| true`:
+- `check=False` returns a `Result` instead of failing, on `execute`, `.bash`, `.sh` and `.zsh`.
+  Use it instead of `; echo exit=$?`, `|| true` or `2>&1` to read an exit code or stderr:
 
 ```python
 def test_status(shed):
-  code = shed.execute(
-    "curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/ || true"
-  )
+  result = shed.execute("grep -q nope /etc/hostname", check=False)
 
-  assert code == "200"
+  assert result.exit_code == 1                  # also .ok, .stdout, .stderr
+  assert shed.execute("echo w >&2", check=False).stderr == "w"
 ```
+
+- `Result` streams lose their trailing newline, and `stderr` is kept on success too.
+  Only `user`, `workdir` and `envs` are passed on, and a missing container still fails.
 
 ## `fs`
 
@@ -58,14 +61,16 @@ shed.fs("/etc/passwd")                        # text; same as shed.fs.text(...)
 shed.fs.bytes("/etc/hostname")
 shed.fs.json("/app/config.json")              # parsed
 shed.fs.yaml("/app/manifest.yaml")            # parsed
+shed.fs.toml("/app/pyproject.toml")           # parsed
 shed.fs.mode("/etc/hostname")                 # "644"
 shed.fs.owner("/etc/hostname")                # "root"
 shed.fs.group("/etc/hostname")                # "root"
+shed.fs.writable("/tmp", user="nobody")       # bool, as the command's user
 ```
 
-`text`, `bytes`, `json` and `yaml` copy the file out of the container, so they read paths
+`text`, `bytes`, `json`, `yaml` and `toml` copy the file out of the container, so they read paths
 the container's user can't.
-`exists`, `ls`, `mode`, `owner` and `group` run commands as the container's user.
+`exists`, `ls`, `mode`, `owner`, `group` and `writable` run commands as the container's user.
 
 ## `proc`
 
@@ -80,13 +85,15 @@ shed.proc.environ(42)                         # another PID
 Names match the kernel's process name exactly, cut at 15 characters.
 `cmdline` raises `LookupError` when nothing matches.
 `environ` reads `/proc/<pid>/environ`, which holds nothing usable for a process that rewrites
-its own title *(nginx does)*; read another PID, or `execute("env")` for the exec environment.
+its own title *(nginx does)*; read another PID, or `env()` for the exec environment.
 To find a process by its full command line, use `pgrep -f` through `execute`.
 
 ## The Container Itself
 
 - **`ip()`:** the container's address on the session's network, for other containers.
 - **`whoami()`:** the user commands run as.
+- **`env()` / `env(name)`:** the environment commands see *(dict, or one value, `None` when
+  unset)*, including what the shell's profile exports. Use it instead of `echo $VAR`.
 - **`logs()`:** the container's output so far, as one string.
 - **`name`, `id`, `state`, …:** anything else goes to the python-on-whales container.
 - **`wrapped`:** the python-on-whales container itself, with its exact type.

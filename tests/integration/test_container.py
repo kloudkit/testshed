@@ -59,3 +59,17 @@ def test_readiness_timeout(docker_sidecar):
 
   assert "http://unreachable" in str(exc_info.value)
   assert "0.1s" in str(exc_info.value)
+
+
+def test_env_returns_the_shell_environment(shed):
+  environ = shed.env(envs={"MULTI": "a\nb", "EMPTY": ""})
+
+  assert environ["PATH"]
+  assert environ["MULTI"] == "a\nb"
+  assert environ["EMPTY"] == ""
+
+
+def test_env_returns_one_value(shed):
+  assert shed.env("HOME") == "/root"
+  assert shed.env("HOME", user="nobody") == "/nonexistent"
+  assert shed.env("NOT_SET") is None

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ✨ Return a `Result` with the exit code, stdout and stderr from `execute(..., check=False)`
+  instead of failing the test
+- ✨ Read the environment commands see with `env()` and `env(name)`
+- ✨ Parse TOML files with `fs.toml(path)`
+- ✨ Check whether a user can write to a path with `fs.writable(path)`
+
+### Changed
+
+- ⬆️ Update the dependencies and raise their minimum versions to the locked ones
+- 🔧 Run the hooks with prek instead of pre-commit
+
+### Fixed
+
+- 🐛 Keep multi-line values whole in `proc.environ()`
+
 ## [0.0.24] - 2026-10-29
 
 ### Fixed
@@ -24,7 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- ⬆️ Update the locked dependencies
+- ⬆️ Update the dependencies and raise their minimum versions to the locked ones
+- 🔧 Run the hooks with prek instead of pre-commit
 
 ### Fixed
 

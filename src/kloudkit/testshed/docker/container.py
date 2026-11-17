@@ -20,21 +20,30 @@ class Container(Wrapper[NativeContainer]):
   def ip(self) -> str:
     """Retrieve internal IP address of container."""
 
-    try:
-      return self.execute(["hostname", "-i"], raises=True)
-    except Exception:
-      settings = self._wrapped.network_settings
+    result = self.execute(["hostname", "-i"], check=False)
 
-      return (
-        next(iter(settings.networks.values())).ip_address
-        if settings.networks
-        else settings.ip_address
-      )
+    if result.ok:
+      return result.stdout
+
+    settings = self._wrapped.network_settings
+
+    return (
+      next(iter(settings.networks.values())).ip_address
+      if settings.networks
+      else settings.ip_address
+    )
 
   def whoami(self) -> str:
     """Retrieve the current user inside the container."""
 
     return self.execute(["whoami"], raises=True)
+
+  def env(self, name: str | None = None, **kwargs) -> dict | str | None:
+    """Retrieve the environment commands see, after shell activation."""
+
+    environ = self.proc.environ("self", **kwargs)
+
+    return environ if name is None else environ.get(name)
 
   @property
   def fs(self) -> FileSystem:
