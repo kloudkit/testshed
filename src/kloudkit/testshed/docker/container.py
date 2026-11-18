@@ -47,7 +47,9 @@ class Container(Wrapper[NativeContainer]):
 
     return environ if name is None else environ.get(name)
 
-  def wait(self, *, probe: Probe = ..., timeout: float | None = None) -> None:
+  def wait(
+    self, *, probe: Probe | None = ..., timeout: float | None = None
+  ) -> None:
     """Wait for the container's probe, overridden as in `shed_config`."""
 
     probe = Probe.resolve(self._get("probe"), probe, timeout)

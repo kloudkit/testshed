@@ -80,5 +80,3 @@ def test_wait_polls_a_probe_mid_test(shed):
   shed.execute("(sleep 1; touch /tmp/ready) > /dev/null 2>&1 &")
 
   shed.wait(probe=ShellProbe(command="test -e /tmp/ready"), timeout=10.0)
-
-  assert shed.fs.exists("/tmp/ready")

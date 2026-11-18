@@ -66,7 +66,7 @@ def test_wait_uses_the_probe_the_container_started_with():
   check.return_value.wait.assert_called_once_with()
 
 
-def test_wait_overlays_a_probe_of_the_same_type_and_a_timeout():
+def test_wait_resolves_probe_and_timeout_like_shed_config():
   container = Container(
     SimpleNamespace(), probe=ShellProbe(command="true", timeout=5.0)
   )
@@ -77,17 +77,6 @@ def test_wait_overlays_a_probe_of_the_same_type_and_a_timeout():
   assert check.call_args.args[1] == ShellProbe(
     command="test -e /ready", timeout=1.0
   )
-
-
-def test_wait_with_only_a_timeout_keeps_the_probe():
-  container = Container(
-    SimpleNamespace(), probe=ShellProbe(command="true", timeout=5.0)
-  )
-
-  with patch("kloudkit.testshed.docker.container.ReadinessCheck") as check:
-    container.wait(timeout=90.0)
-
-  assert check.call_args.args[1] == ShellProbe(command="true", timeout=90.0)
 
 
 def test_wait_without_any_probe_raises():

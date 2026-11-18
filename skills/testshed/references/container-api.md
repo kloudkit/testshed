@@ -79,7 +79,7 @@ the container's user can't.
 shed.proc.running("nginx")                    # bool
 shed.proc.pids("nginx")                       # tuple of PIDs
 shed.proc.cmdline("nginx")                    # command line of the first match
-shed.proc.pids("ws-cli serve", full=True)     # match the space-joined command line
+shed.proc.pids("sleep infinity", full=True)   # match the command line
 shed.proc.environ()                           # dict, environment of PID 1
 shed.proc.environ(42)                         # another PID
 ```

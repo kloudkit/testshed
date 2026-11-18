@@ -73,7 +73,7 @@ shed.wait(probe=ShellProbe(command="test -e /tmp/ready"), timeout=60)
 shed.wait(probe=LogProbe(pattern=r"reindex done"))
 ```
 
-`wait` uses `ReadinessCheck`: the same retries, and an early failure when the container exits.
+It retries like a startup probe and fails early when the container exits.
 `probe=` and `timeout=` combine with the container's probe exactly as in `@shed_config`
 *(see [Against the Default Probe](#against-the-default-probe))*.
 `shed_attach` containers and ones started with `probe=None` need a probe passed in.

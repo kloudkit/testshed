@@ -14,9 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ Match processes by their full command line with `proc.pids(..., full=True)`, also on
   `running` and `cmdline`
 
-### Changed
+### Fixed
 
-- 🔢 Return `proc.pids` lowest first
+- 🐛 Return `proc.pids` lowest first instead of in `/proc` glob order
 
 ## [0.0.25] - 2026-11-17
 
