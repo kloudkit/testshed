@@ -2,7 +2,8 @@
 
 Every container TestShed gives you, from `shed`, `shed_deferred`, `docker_sidecar` or
 `shed_attach`, has the same helpers.
-The image needs the tools they call: a shell, `test`, `ls`, `stat`, `grep`, `tr` and `cat`.
+The image needs the tools they call: a shell, `test`, `ls`, `stat`, `tr`, `cat`
+and `tail`.
 
 ## `execute`
 
@@ -78,20 +79,24 @@ the container's user can't.
 shed.proc.running("nginx")                    # bool
 shed.proc.pids("nginx")                       # tuple of PIDs
 shed.proc.cmdline("nginx")                    # command line of the first match
+shed.proc.pids("sleep infinity", full=True)   # match the command line
 shed.proc.environ()                           # dict, environment of PID 1
 shed.proc.environ(42)                         # another PID
 ```
 
 Names match the kernel's process name exactly, cut at 15 characters.
+`full=True` on `pids`, `running` and `cmdline` matches the command line, as `pgrep -f`
+does. PIDs come lowest first.
 `cmdline` raises `LookupError` when nothing matches.
 `environ` reads `/proc/<pid>/environ`, which holds nothing usable for a process that rewrites
 its own title *(nginx does)*; read another PID, or `env()` for the exec environment.
-To find a process by its full command line, use `pgrep -f` through `execute`.
 
 ## The Container Itself
 
 - **`ip()`:** the container's address on the session's network, for other containers.
 - **`whoami()`:** the user commands run as.
+- **`wait(probe=..., timeout=...)`:** re-run the container's probe mid-test, overridden as in
+  `@shed_config`.
 - **`env()` / `env(name)`:** the environment commands see *(dict, or one value, `None` when
   unset)*, including what the shell's profile exports. Use it instead of `echo $VAR`.
 - **`logs()`:** the container's output so far, as one string.

@@ -1,30 +1,44 @@
-import shlex
-
 from kloudkit.testshed.core.wrapper import Wrapper
 from kloudkit.testshed.docker.runtime.error_handler import error_handler
 
 
 class Process(Wrapper["Container"]):
-  @error_handler
-  def pids(self, name: str) -> tuple[int, ...]:
-    """Retrieve PIDs whose process name exactly matches `name`."""
+  def _read(self, field: str) -> dict[int, str]:
+    """Read `/proc/<pid>/<field>` for every process, by PID."""
 
     output = self._wrapped.execute(
-      f"grep -Flx {shlex.quote(name)} /proc/[0-9]*/comm", check=False
+      f"tail -n +1 /proc/[0-9]*/{field}", check=False
     ).stdout
+    entries = (
+      entry.partition(f"/{field} <==")
+      for entry in output.split("==> /proc/")[1:]
+    )
 
-    return tuple(int(line.split("/")[2]) for line in output.splitlines())
-
-  def running(self, name: str) -> bool:
-    """Check whether a process named `name` is running."""
-
-    return bool(self.pids(name))
+    return {
+      int(pid): value.replace("\0", " ").strip() for pid, _, value in entries
+    }
 
   @error_handler
-  def cmdline(self, name: str) -> str:
+  def pids(self, name: str, *, full: bool = False) -> tuple[int, ...]:
+    """Retrieve PIDs by process name, or by command line with `full=True`."""
+
+    if full:
+      matches = (p for p, cmd in self._read("cmdline").items() if name in cmd)
+    else:
+      matches = (p for p, comm in self._read("comm").items() if comm == name)
+
+    return tuple(sorted(matches))
+
+  def running(self, name: str, *, full: bool = False) -> bool:
+    """Check whether a process named `name` is running."""
+
+    return bool(self.pids(name, full=full))
+
+  @error_handler
+  def cmdline(self, name: str, *, full: bool = False) -> str:
     """Retrieve the space-joined command line of the first `name` match."""
 
-    pids = self.pids(name)
+    pids = self.pids(name, full=full)
 
     if not pids:
       raise LookupError(f"no running process named {name!r}")

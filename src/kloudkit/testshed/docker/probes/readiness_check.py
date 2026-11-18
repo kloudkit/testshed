@@ -1,19 +1,23 @@
 import contextlib
 import time
+from typing import TYPE_CHECKING
 
-from kloudkit.testshed.docker.container import Container
 from kloudkit.testshed.docker.probes.probe import Probe
 
 import pytest
+
+
+if TYPE_CHECKING:
+  from kloudkit.testshed.docker.container import Container
 
 
 class ReadinessCheck:
   LOG_TAIL = 20
 
   def __init__(
-    self, container: Container, probe: Probe, *, container_logs=None
+    self, container: "Container", probe: Probe, *, container_logs=None
   ):
-    self._container: Container = container
+    self._container: "Container" = container
     self._probe: Probe = probe
     self._container_logs = container_logs
 

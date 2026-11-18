@@ -2,6 +2,9 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from kloudkit.testshed.docker.container import Container
+from kloudkit.testshed.docker.probes.shell_probe import ShellProbe
+
+import pytest
 
 
 def test_attach_wraps_existing_container():
@@ -50,3 +53,37 @@ def test_container_repr_falls_back_to_wrapped_repr():
   container = Container(native)
 
   assert repr(container) == f"Container({native!r})"
+
+
+def test_wait_uses_the_probe_the_container_started_with():
+  probe = ShellProbe(command="true", timeout=5.0)
+  container = Container(SimpleNamespace(), probe=probe)
+
+  with patch("kloudkit.testshed.docker.container.ReadinessCheck") as check:
+    container.wait()
+
+  assert check.call_args.args == (container, probe)
+  check.return_value.wait.assert_called_once_with()
+
+
+def test_wait_resolves_probe_and_timeout_like_shed_config():
+  container = Container(
+    SimpleNamespace(), probe=ShellProbe(command="true", timeout=5.0)
+  )
+
+  with patch("kloudkit.testshed.docker.container.ReadinessCheck") as check:
+    container.wait(probe=ShellProbe(command="test -e /ready"), timeout=1.0)
+
+  assert check.call_args.args[1] == ShellProbe(
+    command="test -e /ready", timeout=1.0
+  )
+
+
+def test_wait_without_any_probe_raises():
+  with pytest.raises(ValueError, match="no probe"):
+    Container(SimpleNamespace()).wait()
+
+  with pytest.raises(ValueError, match="no probe"):
+    Container(SimpleNamespace(), probe=ShellProbe(command="true")).wait(
+      probe=None
+    )

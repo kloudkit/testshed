@@ -1,6 +1,7 @@
 from kloudkit.testshed.docker.container import Container
 from kloudkit.testshed.docker.probes.http_probe import HttpProbe
 from kloudkit.testshed.docker.probes.readiness_check import ReadinessCheck
+from kloudkit.testshed.docker.probes.shell_probe import ShellProbe
 
 import pytest
 
@@ -73,3 +74,9 @@ def test_env_returns_one_value(shed):
   assert shed.env("HOME") == "/root"
   assert shed.env("HOME", user="nobody") == "/nonexistent"
   assert shed.env("NOT_SET") is None
+
+
+def test_wait_polls_a_probe_mid_test(shed):
+  shed.execute("(sleep 1; touch /tmp/ready) > /dev/null 2>&1 &")
+
+  shed.wait(probe=ShellProbe(command="test -e /tmp/ready"), timeout=10.0)
