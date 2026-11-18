@@ -68,12 +68,14 @@ for sidecars; set it on the sidecar's probe instead.
 
 ```python
 shed.wait()                                                  # the container's own probe
-shed.wait(ShellProbe(command="test -e /tmp/ready"), timeout=60)
-shed.wait(LogProbe(pattern=r"reindex done"))
+shed.wait(timeout=90)                                        # own probe, longer
+shed.wait(probe=ShellProbe(command="test -e /tmp/ready"), timeout=60)
+shed.wait(probe=LogProbe(pattern=r"reindex done"))
 ```
 
 `wait` uses `ReadinessCheck`: the same retries, and an early failure when the container exits.
-A probe of the container's probe type is merged onto it, as `@shed_config(probe=...)` does.
+`probe=` and `timeout=` combine with the container's probe exactly as in `@shed_config`
+*(see [Against the Default Probe](#against-the-default-probe))*.
 `shed_attach` containers and ones started with `probe=None` need a probe passed in.
 
 ## Custom Probes

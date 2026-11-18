@@ -95,7 +95,8 @@ its own title *(nginx does)*; read another PID, or `env()` for the exec environm
 
 - **`ip()`:** the container's address on the session's network, for other containers.
 - **`whoami()`:** the user commands run as.
-- **`wait(probe=None, timeout=None)`:** re-run the container's probe, or another, mid-test.
+- **`wait(probe=..., timeout=...)`:** re-run the container's probe mid-test, overridden as in
+  `@shed_config`.
 - **`env()` / `env(name)`:** the environment commands see *(dict, or one value, `None` when
   unset)*, including what the shell's profile exports. Use it instead of `echo $VAR`.
 - **`logs()`:** the container's output so far, as one string.

@@ -47,14 +47,10 @@ class Container(Wrapper[NativeContainer]):
 
     return environ if name is None else environ.get(name)
 
-  def wait(
-    self, probe: Probe | None = None, *, timeout: float | None = None
-  ) -> None:
-    """Wait until `probe`, or the probe the container started with, passes."""
+  def wait(self, *, probe: Probe = ..., timeout: float | None = None) -> None:
+    """Wait for the container's probe, overridden as in `shed_config`."""
 
-    probe = Probe.resolve(
-      self._get("probe"), ... if probe is None else probe, timeout
-    )
+    probe = Probe.resolve(self._get("probe"), probe, timeout)
 
     if probe is None:
       raise ValueError("no probe to wait for: pass one, or start with one")
