@@ -10,7 +10,7 @@ class Process(Wrapper["Container"]):
       f"tail -n +1 /proc/[0-9]*/{field}", check=False
     ).stdout
     entries = (
-      entry.partition(f"/{field} <==\n")
+      entry.partition(f"/{field} <==")
       for entry in output.split("==> /proc/")[1:]
     )
 

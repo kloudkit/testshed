@@ -15,7 +15,8 @@ def test_pids_matches_the_full_command_line_across_arguments():
   wrapped, process = _process(
     "==> /proc/100/cmdline <==\nws-cli\0serve\0metrics\0\n"
     "==> /proc/7/cmdline <==\nsleep\0infinity\0\n"
-    "==> /proc/55/cmdline <==\nws-cli\0serve\0metrics\0"
+    "==> /proc/55/cmdline <==\nws-cli\0serve\0metrics\0\n\n"
+    "==> /proc/41/cmdline <=="
   )
 
   assert process.pids("ws-cli serve metrics", full=True) == (55, 100)
