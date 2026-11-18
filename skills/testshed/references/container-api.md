@@ -2,7 +2,7 @@
 
 Every container TestShed gives you, from `shed`, `shed_deferred`, `docker_sidecar` or
 `shed_attach`, has the same helpers.
-The image needs the tools they call: a shell, `test`, `ls`, `stat`, `grep`, `tr`, `cat`
+The image needs the tools they call: a shell, `test`, `ls`, `stat`, `tr`, `cat`
 and `tail`.
 
 ## `execute`

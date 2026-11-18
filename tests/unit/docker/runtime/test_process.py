@@ -24,7 +24,14 @@ def test_pids_matches_the_full_command_line_across_arguments():
   )
 
 
-def test_pids_sorts_name_matches_numerically():
-  _, process = _process("/proc/100/comm\n/proc/55/comm")
+def test_pids_matches_the_exact_process_name():
+  wrapped, process = _process(
+    "==> /proc/100/comm <==\nsleep\n\n"
+    "==> /proc/7/comm <==\nsleeper\n\n"
+    "==> /proc/55/comm <==\nsleep\n"
+  )
 
   assert process.pids("sleep") == (55, 100)
+  wrapped.execute.assert_called_once_with(
+    "tail -n +1 /proc/[0-9]*/comm", check=False
+  )
