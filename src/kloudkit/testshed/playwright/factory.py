@@ -15,7 +15,7 @@ class Factory(DockerFactory):
     internal_port = 3000
 
     return super().build(
-      f"mcr.microsoft.com/playwright:v{playwright_version}-noble",
+      f"{self._state.playwright_image}:v{playwright_version}-noble",
       init=True,
       publish=[(port, internal_port)],
       command=[

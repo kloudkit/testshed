@@ -28,8 +28,8 @@ Fixtures and markers exist only when `--shed` is passed.
   stopped or removed, and needs the network, so it fails with `--shed-skip-bootstrap`.
 - **`docker_sidecar`:** ignores `shed_container_defaults`. Use the module and session variants
   inside your own fixture of the same scope.
-- **`playwright_browser`:** runs `mcr.microsoft.com/playwright` at the installed `playwright`
-  package's version and connects to it on a published port at `127.0.0.1`, so the Docker
+- **`playwright_browser`:** runs `mcr.microsoft.com/playwright` *(or `--shed-playwright-image`)*
+  at the installed `playwright` package's version and connects to it on a published port at `127.0.0.1`, so the Docker
   daemon has to run where pytest runs, and the container has to reach the npm registry.
   One browser serves the session: open a page or context per test and close it.
   Pages and contexts it opens get `clipboard-read` and `clipboard-write` on top of any
@@ -115,6 +115,7 @@ relative to the current directory.
 | `--shed-stubs-dir DIR`       | `tests/stubs`                 | Where relative volume sources resolve.                            |
 | `--shed-skip-bootstrap`      | off                           | Skip the image and network, for tests that start no containers.   |
 | `--shed-container-logs`      | off                           | Print container logs when a command or probe fails a test.        |
+| `--shed-playwright-image IMAGE` | `mcr.microsoft.com/playwright` | Playwright server repository; its tag is the installed `playwright` version. |
 
 ## Labels
 

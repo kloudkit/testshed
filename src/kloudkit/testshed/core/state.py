@@ -28,6 +28,7 @@ class ShedState:
   tests_path: Path
   stubs_path: Path
   container_logs: Callable[[str], None] | None
+  playwright_image: str = "mcr.microsoft.com/playwright"
 
   @property
   def labels(self) -> dict[str, str]:
@@ -62,6 +63,7 @@ class ShedState:
     tests_path: Path,
     stubs_path: Path,
     container_logs: Callable[[str], None] | None,
+    playwright_image: str = "mcr.microsoft.com/playwright",
   ) -> "ShedState":
     """Create a ShedState instance with a dynamic instance key."""
 
@@ -73,4 +75,5 @@ class ShedState:
       tests_path=tests_path,
       stubs_path=stubs_path,
       container_logs=container_logs,
+      playwright_image=playwright_image,
     )

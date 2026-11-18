@@ -50,6 +50,24 @@ jobs:
           uv run coverage run -m pytest --shed --shed-image=debian --shed-tag=13
           uv run coverage report --show-missing
 
+  playwright:
+    name: 🎭 Playwright image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v7
+
+      - name: 🕶 Install uv
+        uses: astral-sh/setup-uv@v10.2.0
+
+      - name: 🔍 Check the pinned playwright has a server image
+        run: |
+          VERSION=$(uv run --no-dev python -c 'from importlib.metadata import version; print(version("playwright"))')
+          IMAGE="mcr.microsoft.com/playwright:v${VERSION}-noble"
+          docker manifest inspect "${IMAGE}" > /dev/null \
+            || { echo "::error::${IMAGE} is not published; keep playwright pinned to a version that has one"; exit 1; }
+
   build:
     name: 📦 Build (dry run)
     runs-on: ubuntu-latest
