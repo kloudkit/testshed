@@ -114,7 +114,8 @@ Pass one as `probe=` wherever a container starts, or set it once in
 `shed_container_defaults`.
 `@shed_config(timeout=90)` waits longer without restating the default probe, and
 `probe=None` turns it off.
-Merge rules and custom probes: [probes](references/probes.md).
+`container.wait()` re-runs the container's probe mid-test, and `container.wait(probe)` another.
+Merge rules, mid-test waits and custom probes: [probes](references/probes.md).
 
 ## Assert on the Container
 
@@ -155,8 +156,8 @@ Every container from every fixture has the same helpers: see
    shell. Use `shlex.quote` for values with spaces or shell characters, or pass one string.
 7. **Wait with a probe, not `time.sleep`.** If the test asserts on something that happens
    after startup, start the container with a `LogProbe` on that line *(often with
-   `shed_deferred`)* and then assert. If you must wait mid-test, poll with a deadline and
-   `pytest.fail` when it passes.
+   `shed_deferred`)* and then assert. To wait mid-test, call `container.wait(probe)`, never
+   a hand-written loop.
 8. **Probes run inside the container.** `HttpProbe` needs `curl` in the image *(or
    `command="wget -qO-"`)* and accepts any HTTP status; `command="curl -f"` requires a
    success. A custom probe must call `execute(..., raises=True)`. In some images `localhost`

@@ -1,7 +1,6 @@
 from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.docker.container import Container
 from kloudkit.testshed.docker.probes.probe import Probe
-from kloudkit.testshed.docker.probes.readiness_check import ReadinessCheck
 from kloudkit.testshed.docker.runtime.cleanup import Cleanup
 from kloudkit.testshed.docker.volumes.volume_manager import VolumeManager
 
@@ -40,6 +39,7 @@ class Factory:
       networks=kwargs.pop("networks", [self._state.network]),
       volumes=self._volume_manager.normalize(kwargs.pop("volumes", [])),
       container_logs=self._state.container_logs,
+      probe=probe,
       **kwargs,
     )
 
@@ -49,9 +49,7 @@ class Factory:
     self._containers.append(container)
 
     if probe:
-      ReadinessCheck(
-        container, probe, container_logs=self._state.container_logs
-      ).wait()
+      container.wait()
 
     return container
 

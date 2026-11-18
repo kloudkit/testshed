@@ -28,3 +28,10 @@ def test_cmdline_raises_for_unknown_process(shed):
 
 def test_environ(shed):
   assert "PATH" in shed.proc.environ()
+
+
+def test_pids_full_matches_the_command_line(shed):
+  assert shed.proc.pids("sleep infinity", full=True) == shed.proc.pids("sleep")
+  assert shed.proc.running("sleep infinity", full=True)
+  assert not shed.proc.running("sleep forever", full=True)
+  assert shed.proc.cmdline("infinity", full=True).startswith("sleep")

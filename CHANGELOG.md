@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ✨ Wait on a probe mid-test with `container.wait()`, which defaults to the container's own
+  probe
+- ✨ Match processes by their full command line with `proc.pids(..., full=True)`, also on
+  `running` and `cmdline`
+
+### Changed
+
+- 🔢 Return `proc.pids` lowest first
+
 ## [0.0.25] - 2026-11-17
 
 ### Added

@@ -64,6 +64,18 @@ def test_slow_boot(shed):
 `timeout` as a container argument works for `shed`, `shed_deferred` and `shed_factory`, not
 for sidecars; set it on the sidecar's probe instead.
 
+## Wait Mid-Test
+
+```python
+shed.wait()                                                  # the container's own probe
+shed.wait(ShellProbe(command="test -e /tmp/ready"), timeout=60)
+shed.wait(LogProbe(pattern=r"reindex done"))
+```
+
+`wait` uses `ReadinessCheck`: the same retries, and an early failure when the container exits.
+A probe of the container's probe type is merged onto it, as `@shed_config(probe=...)` does.
+`shed_attach` containers and ones started with `probe=None` need a probe passed in.
+
 ## Custom Probes
 
 Subclass `Probe` with a `check` that raises until the container is ready and a

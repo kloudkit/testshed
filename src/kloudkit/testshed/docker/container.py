@@ -3,6 +3,8 @@ from typing import Callable
 from python_on_whales import Container as NativeContainer, docker
 
 from kloudkit.testshed.core.wrapper import Wrapper
+from kloudkit.testshed.docker.probes.probe import Probe
+from kloudkit.testshed.docker.probes.readiness_check import ReadinessCheck
 from kloudkit.testshed.docker.runtime.file_system import FileSystem
 from kloudkit.testshed.docker.runtime.process import Process
 from kloudkit.testshed.docker.runtime.shell import Shell
@@ -44,6 +46,22 @@ class Container(Wrapper[NativeContainer]):
     environ = self.proc.environ("self", **kwargs)
 
     return environ if name is None else environ.get(name)
+
+  def wait(
+    self, probe: Probe | None = None, *, timeout: float | None = None
+  ) -> None:
+    """Wait until `probe`, or the probe the container started with, passes."""
+
+    probe = Probe.resolve(
+      self._get("probe"), ... if probe is None else probe, timeout
+    )
+
+    if probe is None:
+      raise ValueError("no probe to wait for: pass one, or start with one")
+
+    ReadinessCheck(
+      self, probe, container_logs=self._get("container_logs")
+    ).wait()
 
   @property
   def fs(self) -> FileSystem:
@@ -93,13 +111,14 @@ class Container(Wrapper[NativeContainer]):
     """Wrap the native `docker.run`."""
 
     container_logs = kwargs.pop("container_logs", False)
+    probe = kwargs.pop("probe", None)
 
     instance = docker.run(*args, **kwargs)
 
     if isinstance(instance, str):
       return instance
 
-    return cls(instance, container_logs=container_logs)
+    return cls(instance, container_logs=container_logs, probe=probe)
 
   @classmethod
   def attach(
