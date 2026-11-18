@@ -7,11 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- ✨ Choose the Playwright server image's repository with `--shed-playwright-image`
-  *(e.g. a mirror)*; its tag is always the installed `playwright` version
-
 ### Changed
 
 - 📌 Pin `playwright` to 1.65.1, the newest release with a

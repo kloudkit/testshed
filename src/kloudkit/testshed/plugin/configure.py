@@ -41,7 +41,6 @@ def pytest_configure(config: pytest.Config) -> None:
     stubs_path=_resolve_path("stubs_dir", config),
     tests_path=_resolve_path("tests_dir", config),
     container_logs=container_logs,
-    playwright_image=config.getoption("shed_playwright_image"),
   )
 
   config.shed = state

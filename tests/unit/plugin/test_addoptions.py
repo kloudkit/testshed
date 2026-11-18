@@ -10,7 +10,7 @@ def test_all_options_registered():
 
   pytest_addoption(parser)
 
-  assert parser.addoption.call_count == 12
+  assert parser.addoption.call_count == 11
 
   option_names = [c.args[0] for c in parser.addoption.call_args_list]
 
@@ -26,7 +26,6 @@ def test_all_options_registered():
     "--shed-tests-dir",
     "--shed-skip-bootstrap",
     "--shed-container-logs",
-    "--shed-playwright-image",
   ]
 
 
@@ -89,16 +88,3 @@ def test_boolean_options_are_store_true():
 
   assert calls["--shed-skip-bootstrap"]["action"] == "store_true"
   assert calls["--shed-container-logs"]["action"] == "store_true"
-
-
-def test_shed_playwright_image_default():
-  parser = Mock(spec=pytest.Parser)
-
-  pytest_addoption(parser)
-
-  calls = {c.args[0]: c.kwargs for c in parser.addoption.call_args_list}
-
-  assert (
-    calls["--shed-playwright-image"]["default"]
-    == "mcr.microsoft.com/playwright"
-  )

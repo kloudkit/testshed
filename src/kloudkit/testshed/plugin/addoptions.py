@@ -89,12 +89,3 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     default=False,
     help="Print container logs on failure.",
   )
-
-  parser.addoption(
-    "--shed-playwright-image",
-    action="store",
-    default="mcr.microsoft.com/playwright",
-    metavar="IMAGE",
-    help="Playwright server image repository, tagged with the installed"
-    " playwright version.",
-  )

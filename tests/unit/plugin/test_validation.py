@@ -5,17 +5,12 @@ from kloudkit.testshed.plugin.validation import validate_config
 import pytest
 
 
-def _create_config_mock(
-  shed_image=None,
-  shed_image_policy=None,
-  shed_playwright_image="mcr.microsoft.com/playwright",
-):
+def _create_config_mock(shed_image=None, shed_image_policy=None):
   config = Mock(spec=pytest.Config)
 
   config.getoption.side_effect = lambda option: {
     "shed_image": shed_image,
     "shed_image_policy": shed_image_policy,
-    "shed_playwright_image": shed_playwright_image,
   }[option]
 
   return config
@@ -67,23 +62,3 @@ def test_valid_config(shed_image_policy):
   )
 
   validate_config(config)
-
-
-@pytest.mark.parametrize(
-  "shed_playwright_image",
-  [
-    "mcr.microsoft.com/playwright:v1.65.1-noble",
-    "mirror.example/playwright@sha256:abc123",
-  ],
-)
-def test_shed_playwright_image_with_tag_or_digest(shed_playwright_image):
-  config = _create_config_mock(
-    shed_image="my-test-image",
-    shed_image_policy="pull",
-    shed_playwright_image=shed_playwright_image,
-  )
-
-  with pytest.raises(
-    pytest.UsageError, match="--shed-playwright-image .* must not contain"
-  ):
-    validate_config(config)
