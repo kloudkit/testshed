@@ -14,6 +14,7 @@ Import them from `kloudkit.testshed.docker`.
 | `ShellProbe(command=)`                      | The command exits 0 inside the container.          |
 
 - Every probe takes `timeout` *(seconds, 30 by default)* and retries every 100 ms.
+  An attempt that hangs runs past `timeout`; bound it in the command *(`curl -m 5`)*.
 - `HttpProbe` defaults to `host="http://localhost"` and `command="curl"`. Any HTTP status
   counts, because curl exits 0 on a 500. Use `command="curl -f"` to require a success, and
   `command="wget -qO-"` when the image has no curl.

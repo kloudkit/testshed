@@ -2,7 +2,10 @@ import contextlib
 import time
 from typing import TYPE_CHECKING
 
+from python_on_whales.exceptions import DockerException
+
 from kloudkit.testshed.docker.probes.probe import Probe
+from kloudkit.testshed.docker.runtime.error_handler import error_message
 
 import pytest
 
@@ -24,14 +27,21 @@ class ReadinessCheck:
   def wait(self) -> None:
     """Wait until a container passes the probe check."""
 
-    deadline = time.time() + self._probe.timeout
+    deadline = time.monotonic() + self._probe.timeout
+    message = self._probe.failure_message
 
-    while time.time() < deadline:
+    while time.monotonic() < deadline:
       try:
         self._probe.check(self._container)
 
         return
-      except Exception:
+      except Exception as error:
+        detail = (
+          error_message(error)
+          if isinstance(error, DockerException)
+          else str(error)
+        )
+        message = f"{self._probe.failure_message}\nLast attempt: {detail}"
         exit_code = self._exit_code()
 
         if exit_code is not None:
@@ -39,7 +49,7 @@ class ReadinessCheck:
 
         time.sleep(0.1)
 
-    self._fail(self._probe.failure_message)
+    self._fail(message)
 
   def _exit_code(self) -> int | None:
     """Exit code of the container once it stopped, `None` while it runs."""

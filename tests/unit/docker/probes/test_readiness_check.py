@@ -28,8 +28,12 @@ def test_fails_with_probe_message_on_timeout():
   container = _container(running=True)
   probe = ShellProbe(command="false", timeout=0.3)
 
-  with pytest.raises(pytest.fail.Exception, match="did not succeed within"):
+  with pytest.raises(pytest.fail.Exception) as error:
     ReadinessCheck(container, probe).wait()
+
+  assert "did not succeed within 0.3s\nLast attempt: not ready" in str(
+    error.value
+  )
 
 
 def test_fails_at_once_with_exit_code_and_logs_when_container_exits():
