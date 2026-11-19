@@ -5,14 +5,7 @@ import pytest
 
 @pytest.fixture
 def external_container(shed_tag):
-  docker.container.remove("testshed-attach-external", force=True)
-
-  container = docker.run(
-    shed_tag,
-    ["sleep", "infinity"],
-    name="testshed-attach-external",
-    detach=True,
-  )
+  container = docker.run(shed_tag, ["sleep", "infinity"], detach=True)
 
   yield container
 
