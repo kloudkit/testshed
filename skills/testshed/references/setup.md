@@ -190,3 +190,5 @@ it:
 
 Run a unit-test subset that starts no containers with `--shed-skip-bootstrap`, so it needs no
 image.
+`--collect-only`, `--help`, `--fixtures` and `--markers` skip the image and the network on
+their own, since they run no tests.
