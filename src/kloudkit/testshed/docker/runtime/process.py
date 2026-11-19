@@ -43,7 +43,9 @@ class Process(Wrapper["Container"]):
     if not pids:
       raise LookupError(f"no running process named {name!r}")
 
-    return self._wrapped.execute(f"tr '\\0' ' ' < /proc/{pids[0]}/cmdline")
+    return self._wrapped.execute(
+      f"tr '\\0' ' ' < /proc/{pids[0]}/cmdline"
+    ).removesuffix(" ")
 
   @error_handler
   def environ(self, pid: int | str = 1, **kwargs) -> dict[str, str]:
