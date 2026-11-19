@@ -4,6 +4,7 @@ from pathlib import Path
 from kloudkit.testshed.core.bootstrap import init_shed_image, init_shed_network
 from kloudkit.testshed.core.state import ShedState
 from kloudkit.testshed.docker.runtime.cleanup import Cleanup
+from kloudkit.testshed.plugin import session
 from kloudkit.testshed.plugin.fixtures import register as register_fixtures
 from kloudkit.testshed.plugin.markers import register as register_markers
 from kloudkit.testshed.plugin.validation import validate_config
@@ -62,6 +63,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
   init_shed_network(state.network)
   config.add_cleanup(partial(Cleanup(state).run, network=True))
+  config.pluginmanager.register(session)
 
   init_shed_image(
     state.image_and_tag,
