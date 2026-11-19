@@ -62,7 +62,7 @@ Import them from `kloudkit.testshed.docker.decorators`.
 
 - Markers work on a test, a class or a module *(`pytestmark = [...]`)*.
 - The closest one wins and replaces the others of its kind; values are not merged.
-- Each kind applies once per test. `@shed_mutable()` is an `@shed_env` underneath.
+- Each kind applies once per test.
 - They affect `shed` and `shed_deferred`, not sidecars.
 
 ## Container Arguments

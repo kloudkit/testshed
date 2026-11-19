@@ -79,8 +79,9 @@ def shed(request: pytest.FixtureRequest):
   """Reuses default or creates new based on markers."""
 
   config = ContainerConfig.create(request)
+  mutable = request.node.get_closest_marker("shed_mutable")
 
-  if not config.has_overrides:
+  if not (config.has_overrides or mutable):
     return request.getfixturevalue("shed_default")
 
   shed_factory = request.getfixturevalue("shed_factory")

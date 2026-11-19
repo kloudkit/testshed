@@ -140,54 +140,51 @@ Every container from every fixture has the same helpers: see
 1. **Never change the shared container.** A bare `shed` is shared by every test in the
    session: writing files, installing packages or killing processes in it breaks other tests.
    Give the test a marker, `@shed_mutable()` at least.
-2. **Don't stack `@shed_mutable()` with `@shed_env`.** It is an `@shed_env` underneath, and
-   only one marker of each kind applies to a test. Any other marker already makes the
-   container dedicated, so drop `@shed_mutable()`.
-3. **The closest marker wins, whole.** A marker on a test replaces the same marker on its
+2. **The closest marker wins, whole.** A marker on a test replaces the same marker on its
    class or module *(`pytestmark`)*. Values are not merged, so restate what you still need.
-4. **Dedicated containers drop the default `envs` and `volumes`.** A test with any marker, and
+3. **Dedicated containers drop the default `envs` and `volumes`.** A test with any marker, and
    every `shed_deferred` call, takes `envs` and `volumes` only from its own markers and
    arguments. Other defaults *(probe, container class)* still apply. Restate the env vars the
    image needs to start.
-5. **A failed command fails the test.** `execute` exits the test on a non-zero status, with the
+4. **A failed command fails the test.** `execute` exits the test on a non-zero status, with the
    command's error output, so a bare `shed.execute("test -f /x")` is already an assertion.
    To expect a failure, use `raises=True` inside `pytest.raises(DockerException, match=...)`.
    To read the exit code, output or stderr of a command that may fail, pass `check=False`.
-6. **Quote what you pass as a list.** A list is joined with spaces, unquoted, and run by the
+5. **Quote what you pass as a list.** A list is joined with spaces, unquoted, and run by the
    shell. Use `shlex.quote` for values with spaces or shell characters, or pass one string.
-7. **Wait with a probe, not `time.sleep`.** If the test asserts on something that happens
+6. **Wait with a probe, not `time.sleep`.** If the test asserts on something that happens
    after startup, start the container with a `LogProbe` on that line *(often with
    `shed_deferred`)* and then assert. To wait mid-test, call `container.wait(...)`, never
    a hand-written loop.
-8. **Probes run inside the container.** `HttpProbe` needs `curl` in the image *(or
+7. **Probes run inside the container.** `HttpProbe` needs `curl` in the image *(or
    `command="wget -qO-"`)* and accepts any HTTP status; `command="curl -f"` requires a
    success. A custom probe must call `execute(..., raises=True)`. In some images `localhost`
    resolves to `::1` first; for a service listening on IPv4 only, use `127.0.0.1`
    *(`HttpProbe(host="http://127.0.0.1", ...)`)*.
-9. **Reach containers from containers.** Point one container at another with `other.ip()`
+8. **Reach containers from containers.** Point one container at another with `other.ip()`
    *(or `other.name`)*. To check an HTTP endpoint, run `curl` inside a container with
    `execute`. The test process runs outside Docker's network, so `requests` against `ip()`
    fails on Docker Desktop and with a remote `DOCKER_HOST`.
-10. **Mounts are read-only.** Relative sources resolve against the stubs directory; absolute
+9. **Mounts are read-only.** Relative sources resolve against the stubs directory; absolute
     ones stay as they are. To change a mounted file, copy it elsewhere inside a dedicated
     container. Prefer `InlineVolume` to a new stub file for a few lines of content.
-11. **A sidecar must keep running.** An image whose default command exits *(`alpine`,
+10. **A sidecar must keep running.** An image whose default command exits *(`alpine`,
     `busybox`)* needs `command=["sleep", "infinity"]`. Don't set `name=`: parallel workers
     share the Docker daemon, and names collide.
-12. **`detach=False` raises, it doesn't fail.** It runs the container to the end and returns
+11. **`detach=False` raises, it doesn't fail.** It runs the container to the end and returns
     its output; no probe runs. A non-zero exit raises `DockerException`: wrap it in
     `pytest.raises(DockerException, match=...)`, whose `match` searches the whole error,
     stderr included. The exception's `stdout` holds only what the container wrote to stdout.
-13. **Session-scoped overrides stay session-scoped.** Overrides of `shed_container_defaults`
+12. **Session-scoped overrides stay session-scoped.** Overrides of `shed_container_defaults`
     and `shed_tag` must use `@pytest.fixture(scope="session")`.
-14. **Parametrize on the shared container.** `@pytest.mark.parametrize` over a bare `shed` is
+13. **Parametrize on the shared container.** `@pytest.mark.parametrize` over a bare `shed` is
     free; with a TestShed marker each case starts a container. Put costly dependencies in a
     module-scoped fixture on `docker_module_sidecar`.
-15. **Import from the public modules.** Use `kloudkit.testshed.docker` *(`Container`,
+14. **Import from the public modules.** Use `kloudkit.testshed.docker` *(`Container`,
     `DockerException`, probes, volumes)* and `kloudkit.testshed.docker.decorators`
     *(markers)*. Don't import deeper modules, and don't add `pytest_plugins`: the plugin
     registers itself.
-16. **Process names stop at 15 characters.** `proc.pids`, `proc.running` and `proc.cmdline`
+15. **Process names stop at 15 characters.** `proc.pids`, `proc.running` and `proc.cmdline`
     match the kernel's process name exactly, cut at 15 characters.
 
 Worked examples of these rules: [patterns](references/patterns.md).
