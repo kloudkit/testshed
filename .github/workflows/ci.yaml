@@ -43,10 +43,12 @@ jobs:
 
       - name: 🕶 Install uv
         uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: "3.11"
 
       - name: 🧪 Run tests with coverage
         run: |
-          uv sync --group dev
+          uv sync --locked --group dev
           uv run coverage run -m pytest --shed --shed-image=debian --shed-tag=13
           uv run coverage report --show-missing
 

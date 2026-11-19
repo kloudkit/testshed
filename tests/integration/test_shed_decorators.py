@@ -7,6 +7,8 @@ from kloudkit.testshed.docker.decorators import (
 from kloudkit.testshed.docker.volumes.inline_volume import InlineVolume
 from kloudkit.testshed.docker.volumes.remote_volume import RemoteVolume
 
+import pytest
+
 
 @shed_env(HELLO="world")
 def test_env_decorator(shed):
@@ -49,4 +51,16 @@ def test_default(shed, shed_default):
 
 @shed_mutable()
 def test_mutable(shed, shed_default):
+  assert shed != shed_default
+
+
+@shed_env(HELLO="world")
+@shed_mutable()
+def test_mutable_keeps_env(shed, shed_default):
+  assert shed != shed_default
+  assert shed.execute(["echo", "$HELLO"]) == "world"
+
+
+@pytest.mark.shed_mutable
+def test_native_mutable_marker(shed, shed_default):
   assert shed != shed_default

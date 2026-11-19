@@ -18,7 +18,7 @@ def test_running(shed):
 
 
 def test_cmdline(shed):
-  assert "infinity" in shed.proc.cmdline("sleep")
+  assert shed.proc.cmdline("sleep") == "sleep infinity"
 
 
 def test_cmdline_raises_for_unknown_process(shed):

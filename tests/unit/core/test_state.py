@@ -25,7 +25,7 @@ def test_generate_name_with_project():
 
   assert parts[0] == "testshed"
   assert parts[1] == "myproject"
-  assert len(parts[2]) == 4
+  assert len(parts[2]) == 8
   assert len(parts) == 3
 
   assert options.network == options.instance_key
@@ -40,7 +40,7 @@ def test_generate_name_with_xdist():
 
   assert parts[0] == "testshed"
   assert parts[1] == "myproject"
-  assert len(parts[2]) == 4
+  assert len(parts[2]) == 8
   assert parts[3] == "gw0"
   assert len(parts) == 4
 
@@ -79,3 +79,17 @@ def test_image_and_tag_with_sha():
   )
 
   assert state.image_and_tag == "myregistry/myimage@sha256:abc123def456"
+
+
+def test_image_and_tag_with_sha_prefixed_tag():
+  state = ShedState.create(
+    project_name="test",
+    image="myregistry/myimage",
+    tag="sha-860c190",
+    src_path=Path("/test/src"),
+    tests_path=Path("/test/tests"),
+    stubs_path=Path("/test/stubs"),
+    container_logs=None,
+  )
+
+  assert state.image_and_tag == "myregistry/myimage:sha-860c190"

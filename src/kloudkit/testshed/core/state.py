@@ -1,5 +1,5 @@
 import os
-import random
+import secrets
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -9,7 +9,7 @@ def _generate_instance_key(project_name: str) -> str:
   """Generate a unique instance identifier for containers and networks."""
 
   xdist_worker = os.getenv("PYTEST_XDIST_WORKER")
-  random_suffix = f"{random.randint(1000, 9999)}"
+  random_suffix = secrets.token_hex(4)
 
   instance_parts = filter(
     None,
@@ -45,10 +45,7 @@ class ShedState:
   def image_and_tag(self) -> str:
     """Fully-qualified Docker testing image for test runs."""
 
-    sep = ":"
-
-    if self.tag.startswith("sha"):
-      sep = "@"
+    sep = "@" if ":" in self.tag else ":"
 
     return f"{self.image}{sep}{self.tag}"
 

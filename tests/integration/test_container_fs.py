@@ -1,4 +1,6 @@
-from kloudkit.testshed.docker.decorators import shed_volumes
+import shlex
+
+from kloudkit.testshed.docker.decorators import shed_mutable, shed_volumes
 
 import pytest
 
@@ -36,6 +38,7 @@ def test_toml(shed):
   }
 
 
+@shed_mutable()
 def test_writable(shed):
   shed.execute("touch /tmp/root-only && chmod 600 /tmp/root-only")
 
@@ -94,3 +97,14 @@ def test_ownership(shed):
 def test_missing_file_fails_cleanly(shed):
   with pytest.raises(pytest.fail.Exception):
     shed.fs.bytes("/tmp/not-a-file")
+
+
+@shed_mutable()
+def test_paths_with_shell_characters(shed):
+  for path in ("/tmp/a b", "/tmp/x$y", "/tmp/it's"):
+    shed.execute(["mkdir", "-m", "750", shlex.quote(path)])
+
+    assert shed.fs.exists(path)
+    assert shed.fs.writable(path)
+    assert shed.fs.mode(path) == "750"
+    assert shed.fs.ls(path) == ()

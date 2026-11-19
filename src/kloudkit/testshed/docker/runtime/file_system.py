@@ -1,4 +1,5 @@
 import json
+import shlex
 import tempfile
 import tomllib
 from pathlib import Path
@@ -11,10 +12,15 @@ from kloudkit.testshed.docker.runtime.error_handler import error_handler
 
 
 class FileSystem(Wrapper["Container"]):
+  def _run(self, *argv: str | Path, **kwargs):
+    """Run a command in the container with every argument quoted."""
+
+    return self._wrapped.execute(shlex.join(map(str, argv)), **kwargs)
+
   def exists(self, path: str | Path) -> bool:
     """Check if a file or directory exists."""
 
-    return self._wrapped.execute(["test", "-e", str(path)], check=False).ok
+    return self._run("test", "-e", path, check=False).ok
 
   def json(self, path: str | Path) -> dict:
     """Retrieve the content of a file as json."""
@@ -34,9 +40,7 @@ class FileSystem(Wrapper["Container"]):
   def writable(self, path: str | Path, **kwargs) -> bool:
     """Check whether the command's user can write to a path."""
 
-    return self._wrapped.execute(
-      ["test", "-w", str(path)], check=False, **kwargs
-    ).ok
+    return self._run("test", "-w", path, check=False, **kwargs).ok
 
   def text(self, path: str | Path) -> str:
     """Retrieve the content of a file as text."""
@@ -61,13 +65,13 @@ class FileSystem(Wrapper["Container"]):
     if hidden:
       flags = f"{flags}a"
 
-    return tuple(self._wrapped.execute(["\\ls", flags, str(path)]).splitlines())
+    return tuple(self._run("command", "ls", flags, path).splitlines())
 
   @error_handler
   def _stat(self, path: str | Path, fmt: str) -> str:
     """Retrieve a `stat` format field for a given path."""
 
-    return self._wrapped.execute(["stat", "-c", fmt, str(path)]).strip()
+    return self._run("stat", "-c", fmt, path).strip()
 
   def mode(self, path: str | Path) -> str:
     """Retrieve the file or directory mode for a given path."""

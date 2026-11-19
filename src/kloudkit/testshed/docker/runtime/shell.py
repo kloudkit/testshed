@@ -30,7 +30,6 @@ class Shell(Wrapper[NativeContainer]):
     shell: str = None,
     login_shell: bool | None = None,
     check: bool = True,
-    raises=False,
     **kwargs,
   ) -> Iterable[tuple[str, bytes]] | str | Result | None:
     """Execute commands natively using the default shell."""

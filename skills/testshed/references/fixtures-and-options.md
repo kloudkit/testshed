@@ -62,7 +62,7 @@ Import them from `kloudkit.testshed.docker.decorators`.
 
 - Markers work on a test, a class or a module *(`pytestmark = [...]`)*.
 - The closest one wins and replaces the others of its kind; values are not merged.
-- Each kind applies once per test. `@shed_mutable()` is an `@shed_env` underneath.
+- Each kind applies once per test.
 - They affect `shed` and `shed_deferred`, not sidecars.
 
 ## Container Arguments
@@ -74,7 +74,7 @@ python-on-whales' `docker.run` *(`envs`, `publish`, `command`, `entrypoint`, `us
 | Argument          | Description                                                                         |
 | ----------------- | ----------------------------------------------------------------------------------- |
 | `probe`           | A readiness probe to wait for; `None` for none.                                     |
-| `timeout`         | Seconds to wait for the probe, keeping its other fields *(not on sidecars)*.        |
+| `timeout`         | Seconds to wait for the probe, keeping its other fields.                            |
 | `container_class` | The `Container` subclass to wrap the container in.                                  |
 | `volumes`         | `(source, dest)` tuples or volume objects, mounted read-only.                       |
 | `networks`        | Networks to join instead of the session's network.                                  |
@@ -106,7 +106,7 @@ relative to the current directory.
 | ---------------------------- | ----------------------------- | ----------------------------------------------------------------- |
 | `--shed`                     | off                           | Enable TestShed.                                                  |
 | `--shed-image IMAGE`         | none, required                | Image repository, without a tag.                                  |
-| `--shed-tag TAG\|SHA`        | `tests`                       | Image tag, or a digest when it starts with `sha`.                 |
+| `--shed-tag TAG\|SHA`        | `tests`                       | Image tag, or a digest *(`sha256:…`)*.                            |
 | `--shed-image-policy POLICY` | `pull`                        | `pull`, `build`, `require` or `rebuild`.                          |
 | `--shed-build-context DIR`   | the pytest config's directory | Build context for builds.                                         |
 | `--shed-dockerfile FILE`     | `Dockerfile`                  | Dockerfile, relative to the build context.                        |

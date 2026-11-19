@@ -302,9 +302,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d1/8e/f7d7e69e2ad34ce08595b787eb578f669c00fd57d432ed4c7cfd71666f36/coverage-7.17.3-py3-none-any.whl", hash = "sha256:21745c08f2835b847a16887b748d3084dddeb0571ae2a0d62e33644413568b99", size = 219999, upload-time = "2026-11-12T12:26:43.553Z" },
 ]
 
-[package.optional-dependencies]
-toml = []
-
 [[package]]
 name = "greenlet"
 version = "3.5.6"
@@ -635,7 +632,7 @@ name = "pytest-cov"
 version = "7.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "coverage", extra = ["toml"] },
+    { name = "coverage" },
     { name = "pluggy" },
     { name = "pytest" },
 ]
@@ -769,6 +766,23 @@ dev = [
     { name = "prek" },
     { name = "pytest-cov" },
     { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "playwright", specifier = "==1.65.1" },
+    { name = "pytest", specifier = ">=9.2.0" },
+    { name = "python-on-whales", specifier = ">=0.81.0,<1.0.0" },
+    { name = "pyyaml", specifier = ">=6.0.3,<7.0.0" },
+    { name = "requests", specifier = ">=2.34.2,<3.0.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "coverage", specifier = ">=7.17.3" },
+    { name = "prek", specifier = ">=0.5.9" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "ruff", specifier = ">=0.17.5" },
 ]
 
 [[package]]

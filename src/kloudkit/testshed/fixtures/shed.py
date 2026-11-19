@@ -43,19 +43,12 @@ def shed_factory(shed_tag, docker_sidecar, shed_container_defaults):
 
   def _wrapper(**kwargs):
     probe = Probe.resolve(
-      default=shed_container_defaults.get("probe"),
-      user=kwargs.pop("probe", ...),
-      timeout=kwargs.pop("timeout", None),
+      shed_container_defaults.get("probe"), kwargs.pop("probe", ...)
     )
 
-    merged_config = {**shed_container_defaults, **kwargs}
-    merged_config.pop("probe", None)
-    merged_config.pop("timeout", None)
-
-    if probe is not None:
-      merged_config["probe"] = probe
-
-    return docker_sidecar(image=shed_tag, **merged_config)
+    return docker_sidecar(
+      image=shed_tag, **{**shed_container_defaults, **kwargs, "probe": probe}
+    )
 
   return _wrapper
 
@@ -86,8 +79,9 @@ def shed(request: pytest.FixtureRequest):
   """Reuses default or creates new based on markers."""
 
   config = ContainerConfig.create(request)
+  mutable = request.node.get_closest_marker("shed_mutable")
 
-  if not config.has_overrides:
+  if not (config.has_overrides or mutable):
     return request.getfixturevalue("shed_default")
 
   shed_factory = request.getfixturevalue("shed_factory")

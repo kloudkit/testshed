@@ -1,3 +1,4 @@
+import shlex
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -27,7 +28,7 @@ class HttpProbe(Probe):
   def check(self, container: "Container") -> None:
     """Single probe attempt. Raise on failure."""
 
-    container.execute([*self.command.split(" "), self.url], raises=True)
+    container.execute(f"{self.command} {shlex.quote(self.url)}", raises=True)
 
   @property
   def failure_message(self) -> str:

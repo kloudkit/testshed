@@ -3,12 +3,23 @@ from pathlib import Path
 
 from kloudkit.testshed.core.bootstrap import init_shed_image, init_shed_network
 from kloudkit.testshed.core.state import ShedState
+from kloudkit.testshed.docker.runtime.cleanup import Cleanup
+from kloudkit.testshed.plugin import session
 from kloudkit.testshed.plugin.fixtures import register as register_fixtures
 from kloudkit.testshed.plugin.markers import register as register_markers
 from kloudkit.testshed.plugin.validation import validate_config
 from kloudkit.testshed.utils.terminal import print_container_logs
 
 import pytest
+
+
+_SKIP_BOOTSTRAP = (
+  "shed_skip_bootstrap",
+  "collectonly",
+  "help",
+  "showfixtures",
+  "markers",
+)
 
 
 def _resolve_path(directory: str, config: pytest.Config) -> Path:
@@ -45,12 +56,14 @@ def pytest_configure(config: pytest.Config) -> None:
 
   config.shed = state
 
-  if config.getoption("shed_skip_bootstrap"):
+  if any(config.getoption(name) for name in _SKIP_BOOTSTRAP):
     return
 
   context_path = config.getoption("shed_build_context") or config.inipath.parent
 
   init_shed_network(state.network)
+  config.add_cleanup(partial(Cleanup(state).run, network=True))
+  config.pluginmanager.register(session)
 
   init_shed_image(
     state.image_and_tag,

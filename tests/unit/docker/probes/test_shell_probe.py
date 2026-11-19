@@ -25,15 +25,13 @@ def test_custom_command_list():
   assert probe.command == ["pg_isready", "-U", "postgres"]
 
 
-def test_check_splits_string_command():
+def test_check_passes_string_command_unchanged():
   container = MagicMock()
-  probe = ShellProbe(command="pg_isready -U postgres")
+  probe = ShellProbe(command="grep -q 'a  b' /f")
 
   probe.check(container)
 
-  container.execute.assert_called_once_with(
-    ["pg_isready", "-U", "postgres"], raises=True
-  )
+  container.execute.assert_called_once_with("grep -q 'a  b' /f", raises=True)
 
 
 def test_check_passes_list_command_directly():

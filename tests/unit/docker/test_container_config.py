@@ -85,6 +85,27 @@ def test_create_with_all_markers():
   assert config.test_name == "test_module::test_function"
 
 
+def test_create_folds_shed_config_envs_and_volumes():
+  request = Mock()
+  request.node.nodeid = "test_module::test_function"
+
+  config_kwargs = {"envs": {"A": "cfg", "B": "cfg"}, "volumes": ["/a"], "u": 1}
+  markers = {
+    "shed_env": Mock(kwargs={"A": "env"}),
+    "shed_volumes": Mock(args=("/b",)),
+    "shed_config": Mock(kwargs=config_kwargs),
+  }
+
+  request.node.get_closest_marker.side_effect = markers.get
+
+  config = ContainerConfig.create(request)
+
+  assert config.envs == {"A": "env", "B": "cfg"}
+  assert config.volumes == ("/a", "/b")
+  assert config.args == {"u": 1}
+  assert "envs" in config_kwargs
+
+
 def test_merge_with_no_overrides():
   config = ContainerConfig(
     envs={"A": "1"}, volumes=("/v1",), args={"x": "y"}, test_name="test_fn"
