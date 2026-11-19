@@ -74,7 +74,7 @@ python-on-whales' `docker.run` *(`envs`, `publish`, `command`, `entrypoint`, `us
 | Argument          | Description                                                                         |
 | ----------------- | ----------------------------------------------------------------------------------- |
 | `probe`           | A readiness probe to wait for; `None` for none.                                     |
-| `timeout`         | Seconds to wait for the probe, keeping its other fields *(not on sidecars)*.        |
+| `timeout`         | Seconds to wait for the probe, keeping its other fields.                            |
 | `container_class` | The `Container` subclass to wrap the container in.                                  |
 | `volumes`         | `(source, dest)` tuples or volume objects, mounted read-only.                       |
 | `networks`        | Networks to join instead of the session's network.                                  |

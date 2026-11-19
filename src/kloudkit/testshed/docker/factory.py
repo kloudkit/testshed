@@ -23,6 +23,7 @@ class Factory:
     *,
     detach: bool = True,
     probe: Probe | None = None,
+    timeout: float | None = None,
     container_class: type[Container] | None = None,
     test_name: str | None = None,
     **kwargs,
@@ -30,6 +31,7 @@ class Factory:
     """Create a Docker container to use in test-cases."""
 
     container_class = container_class or Container
+    probe = Probe.resolve(probe, ..., timeout)
 
     container = container_class.run(
       image,

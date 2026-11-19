@@ -61,8 +61,7 @@ def test_slow_boot(shed):
   ...
 ```
 
-`timeout` as a container argument works for `shed`, `shed_deferred` and `shed_factory`, not
-for sidecars; set it on the sidecar's probe instead.
+`timeout` as a container argument wins over the probe's own `timeout`.
 
 ## Wait Mid-Test
 
