@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ✨ Accept a registry with a port in `--shed-image` *(`localhost:5000/app`)*
+- ✨ Take `timeout` on `docker_sidecar` and its module and session variants
+
+### Changed
+
+- ⚡️ Skip bootstrap under `--collect-only`, `--help`, `--fixtures` and `--markers`
+- 🥅 Name the last attempt's error when a probe times out
+- 🔇 Print the Ctrl+C cleanup notice only when the session has Docker resources to remove
+- ♻️ Stop setting `_SHED_MUTABLE=true` in containers started with `@shed_mutable()`
+- 🔧 Configure the hooks in `prek.toml`, with Ruff run from the lockfile
+- 💚 Test on Python 3.11 in CI and fail on a stale lockfile
+
+### Fixed
+
+- 🐛 Apply a `timeout` in `shed_container_defaults`, which crashed the shared container and
+  was ignored by `shed_factory`
+- 🐛 Merge `envs` and `volumes` given to `@shed_config` with `@shed_env` and `@shed_volumes`
+  instead of failing
+- 🐛 Keep `@shed_env` values next to `@shed_mutable()`, and give a dedicated container to a
+  plain `@pytest.mark.shed_mutable`
+- 🐛 Remove the session network when acquiring the image fails, and call no Docker at the
+  end of a `--shed-skip-bootstrap` run
+- 🐛 Stop with a usage error instead of an internal error when there is no pytest config file
+- 🐛 Quote the paths `fs` passes to commands and the URL in `HttpProbe`, so spaces, `$`, `'`
+  and `&` work
+- 🐛 Run a `ShellProbe` string command as written, keeping the spaces inside its quotes
+- 🐛 Read `--shed-tag` as a digest only when it contains `:`, so `sha-…` tags work
+- 🐛 Return only the session network's address from `ip()` on a container with several
+  networks
+- 🐛 Print the container's logs when `fs.bytes`, `text`, `json`, `yaml` or `toml` fail
+- 🐛 Drop the trailing space from `proc.cmdline`
+- 🐛 Name each session's network and label with 8 random hex characters, so sessions on one
+  daemon don't share them
+
 ## [0.0.27] - 2026-11-18
 
 ### Changed
