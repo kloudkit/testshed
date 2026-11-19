@@ -12,6 +12,15 @@ from kloudkit.testshed.utils.terminal import print_container_logs
 import pytest
 
 
+_SKIP_BOOTSTRAP = (
+  "shed_skip_bootstrap",
+  "collectonly",
+  "help",
+  "showfixtures",
+  "markers",
+)
+
+
 def _resolve_path(directory: str, config: pytest.Config) -> Path:
   directory = config.getoption(f"shed_{directory}")
 
@@ -46,7 +55,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
   config.shed = state
 
-  if config.getoption("shed_skip_bootstrap"):
+  if any(config.getoption(name) for name in _SKIP_BOOTSTRAP):
     return
 
   context_path = config.getoption("shed_build_context") or config.inipath.parent
