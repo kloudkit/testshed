@@ -45,10 +45,7 @@ class ShedState:
   def image_and_tag(self) -> str:
     """Fully-qualified Docker testing image for test runs."""
 
-    sep = ":"
-
-    if self.tag.startswith("sha"):
-      sep = "@"
+    sep = "@" if ":" in self.tag else ":"
 
     return f"{self.image}{sep}{self.tag}"
 

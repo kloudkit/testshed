@@ -79,3 +79,17 @@ def test_image_and_tag_with_sha():
   )
 
   assert state.image_and_tag == "myregistry/myimage@sha256:abc123def456"
+
+
+def test_image_and_tag_with_sha_prefixed_tag():
+  state = ShedState.create(
+    project_name="test",
+    image="myregistry/myimage",
+    tag="sha-860c190",
+    src_path=Path("/test/src"),
+    tests_path=Path("/test/tests"),
+    stubs_path=Path("/test/stubs"),
+    container_logs=None,
+  )
+
+  assert state.image_and_tag == "myregistry/myimage:sha-860c190"

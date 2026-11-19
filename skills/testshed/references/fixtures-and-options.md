@@ -106,7 +106,7 @@ relative to the current directory.
 | ---------------------------- | ----------------------------- | ----------------------------------------------------------------- |
 | `--shed`                     | off                           | Enable TestShed.                                                  |
 | `--shed-image IMAGE`         | none, required                | Image repository, without a tag.                                  |
-| `--shed-tag TAG\|SHA`        | `tests`                       | Image tag, or a digest when it starts with `sha`.                 |
+| `--shed-tag TAG\|SHA`        | `tests`                       | Image tag, or a digest *(`sha256:…`)*.                            |
 | `--shed-image-policy POLICY` | `pull`                        | `pull`, `build`, `require` or `rebuild`.                          |
 | `--shed-build-context DIR`   | the pytest config's directory | Build context for builds.                                         |
 | `--shed-dockerfile FILE`     | `Dockerfile`                  | Dockerfile, relative to the build context.                        |
