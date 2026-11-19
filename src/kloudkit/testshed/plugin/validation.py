@@ -19,7 +19,7 @@ def validate_config(config: pytest.Config) -> None:
       "TestShed requires --shed-image to be specified when --shed is enabled"
     )
 
-  if ":" in shed_image or "@" in shed_image:
+  if "@" in shed_image or ":" in shed_image.rsplit("/", 1)[-1]:
     _raise(
       f"--shed-image [{shed_image}] must not contain a tag or digest."
       " Pass the tag via --shed-tag instead"

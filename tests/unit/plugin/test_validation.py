@@ -32,6 +32,8 @@ def test_missing_shed_image(shed_image):
     "ghcr.io/kloudkit/workspace:pr-563",
     "debian:13",
     "myimage@sha256:abc123",
+    "localhost:5000/app:tests",
+    "localhost:5000/app@sha256:abc123",
   ],
 )
 def test_shed_image_with_tag_or_digest(shed_image):
@@ -70,3 +72,11 @@ def test_missing_config_file():
 
   with pytest.raises(pytest.UsageError, match="pytest config file"):
     validate_config(config)
+
+
+def test_shed_image_with_registry_port():
+  validate_config(
+    _create_config_mock(
+      shed_image="localhost:5000/app", shed_image_policy="pull"
+    )
+  )

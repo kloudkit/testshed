@@ -47,8 +47,7 @@ addopts = "--shed --shed-image=app --shed-image-policy=build --shed-build-contex
 
 ## Images
 
-`--shed-image` is the repository without a tag *(`ghcr.io/acme/app`)*.
-It can't contain `:` or `@`, so a registry with a port *(`localhost:5000/app`)* is rejected.
+`--shed-image` is the repository without a tag *(`ghcr.io/acme/app`, `localhost:5000/app`)*.
 `--shed-tag` is the tag *(`tests` by default)*, or a digest *(`sha256:…`)*.
 
 `--shed-image-policy` decides how the image is acquired before the first test:
