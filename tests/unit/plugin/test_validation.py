@@ -62,3 +62,11 @@ def test_valid_config(shed_image_policy):
   )
 
   validate_config(config)
+
+
+def test_missing_config_file():
+  config = _create_config_mock(shed_image="debian", shed_image_policy="pull")
+  config.inipath = None
+
+  with pytest.raises(pytest.UsageError, match="pytest config file"):
+    validate_config(config)

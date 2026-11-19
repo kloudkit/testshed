@@ -5,5 +5,4 @@ from kloudkit.testshed.plugin.presenter import (
 )
 from kloudkit.testshed.plugin.session import (
   pytest_keyboard_interrupt,  # noqa: F401
-  pytest_sessionfinish,  # noqa: F401
 )

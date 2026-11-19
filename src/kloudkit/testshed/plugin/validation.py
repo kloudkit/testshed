@@ -8,6 +8,9 @@ def _raise(message: str):
 def validate_config(config: pytest.Config) -> None:
   """Validate required pytest configuration options."""
 
+  if config.inipath is None:
+    _raise("TestShed needs a pytest config file to resolve its paths from")
+
   shed_image = config.getoption("shed_image")
   shed_image_policy = config.getoption("shed_image_policy")
 
