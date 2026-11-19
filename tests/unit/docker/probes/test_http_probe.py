@@ -114,7 +114,18 @@ def test_check_executes_command():
   probe.check(container)
 
   container.execute.assert_called_once_with(
-    ["curl", "http://localhost:8080/health"], raises=True
+    "curl http://localhost:8080/health", raises=True
+  )
+
+
+def test_check_quotes_the_url():
+  container = MagicMock()
+  probe = HttpProbe(port=8080, endpoint="/x?a=1&b=2")
+
+  probe.check(container)
+
+  container.execute.assert_called_once_with(
+    "curl 'http://localhost:8080/x?a=1&b=2'", raises=True
   )
 
 
