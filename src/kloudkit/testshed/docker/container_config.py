@@ -53,9 +53,14 @@ class ContainerConfig:
     env_marker = item.get_closest_marker("shed_env")
     volumes_marker = item.get_closest_marker("shed_volumes")
 
+    args = dict(config_marker.kwargs) if config_marker else {}
+
     return cls(
-      envs=env_marker.kwargs if env_marker else {},
-      volumes=tuple(volumes_marker.args) if volumes_marker else tuple(),
+      envs=args.pop("envs", {}),
+      volumes=tuple(args.pop("volumes", ())),
       test_name=item.nodeid,
-      args=(config_marker.kwargs if config_marker else {}),
+      args=args,
+    ).merge(
+      envs=env_marker.kwargs if env_marker else None,
+      volumes=volumes_marker.args if volumes_marker else None,
     )
