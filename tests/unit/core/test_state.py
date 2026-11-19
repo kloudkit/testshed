@@ -25,7 +25,7 @@ def test_generate_name_with_project():
 
   assert parts[0] == "testshed"
   assert parts[1] == "myproject"
-  assert len(parts[2]) == 4
+  assert len(parts[2]) == 8
   assert len(parts) == 3
 
   assert options.network == options.instance_key
@@ -40,7 +40,7 @@ def test_generate_name_with_xdist():
 
   assert parts[0] == "testshed"
   assert parts[1] == "myproject"
-  assert len(parts[2]) == 4
+  assert len(parts[2]) == 8
   assert parts[3] == "gw0"
   assert len(parts) == 4
 
