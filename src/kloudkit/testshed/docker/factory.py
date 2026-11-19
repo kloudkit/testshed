@@ -42,6 +42,7 @@ class Factory:
       volumes=self._volume_manager.normalize(kwargs.pop("volumes", [])),
       container_logs=self._state.container_logs,
       probe=probe,
+      session_network=self._state.network,
       **kwargs,
     )
 

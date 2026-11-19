@@ -18,7 +18,7 @@ def test_run_container(docker_sidecar):
   assert isinstance(result, Container)
 
 
-def test_ip_via_hostname(docker_sidecar):
+def test_ip(docker_sidecar):
   container = docker_sidecar(
     "alpine", command=["sleep", "infinity"], detach=True
   )

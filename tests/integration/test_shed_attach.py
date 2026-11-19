@@ -38,3 +38,14 @@ def test_attach_reaches_managed_container(
   attached = shed_attach(external_container.name)
 
   assert attached.execute(["getent", "hosts", shed_default.name])
+
+
+def test_attach_ip_is_on_shed_network(
+  external_container, shed_attach, shed_state
+):
+  attached = shed_attach(external_container.name)
+
+  assert (
+    attached.ip()
+    == attached.network_settings.networks[shed_state.network].ip_address
+  )

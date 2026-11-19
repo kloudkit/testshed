@@ -20,20 +20,16 @@ class Container(Wrapper[NativeContainer]):
   DEFAULT_SHELL = None
 
   def ip(self) -> str:
-    """Retrieve internal IP address of container."""
+    """Retrieve the container's address on the session's network."""
 
-    result = self.execute(["hostname", "-i"], check=False)
-
-    if result.ok:
-      return result.stdout
-
+    self._wrapped.reload()
     settings = self._wrapped.network_settings
-
-    return (
-      next(iter(settings.networks.values())).ip_address
-      if settings.networks
-      else settings.ip_address
+    networks = settings.networks or {}
+    endpoint = networks.get(self._get("session_network")) or next(
+      iter(networks.values()), None
     )
+
+    return endpoint.ip_address if endpoint else settings.ip_address
 
   def whoami(self) -> str:
     """Retrieve the current user inside the container."""
@@ -110,13 +106,19 @@ class Container(Wrapper[NativeContainer]):
 
     container_logs = kwargs.pop("container_logs", False)
     probe = kwargs.pop("probe", None)
+    session_network = kwargs.pop("session_network", None)
 
     instance = docker.run(*args, **kwargs)
 
     if isinstance(instance, str):
       return instance
 
-    return cls(instance, container_logs=container_logs, probe=probe)
+    return cls(
+      instance,
+      container_logs=container_logs,
+      probe=probe,
+      session_network=session_network,
+    )
 
   @classmethod
   def attach(
@@ -124,9 +126,12 @@ class Container(Wrapper[NativeContainer]):
     name_or_id: str,
     *,
     container_logs: Callable[[str], None] | None = None,
+    session_network: str | None = None,
   ) -> "Container":
     """Wrap an existing, externally-managed container."""
 
     instance = docker.container.inspect(name_or_id)
 
-    return cls(instance, container_logs=container_logs)
+    return cls(
+      instance, container_logs=container_logs, session_network=session_network
+    )

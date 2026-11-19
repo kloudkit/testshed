@@ -52,7 +52,7 @@ def test_attach_skips_when_already_connected(request_mock, state):
   request_mock.addfinalizer.assert_not_called()
 
 
-def test_attach_passes_the_log_printer(request_mock, state):
+def test_attach_passes_the_log_printer_and_network(request_mock, state):
   state.container_logs = Mock()
   container_class = Mock(
     attach=Mock(return_value=_container(networks={"shed-net": object()}))
@@ -62,5 +62,5 @@ def test_attach_passes_the_log_printer(request_mock, state):
     _make_attach(request_mock, state, container_class)("svc")
 
   container_class.attach.assert_called_once_with(
-    "svc", container_logs=state.container_logs
+    "svc", container_logs=state.container_logs, session_network="shed-net"
   )

@@ -23,7 +23,7 @@ def _make_attach(request, state: ShedState, container_class):
 
   def _attach(name_or_id: str) -> Container:
     container = container_class.attach(
-      name_or_id, container_logs=state.container_logs
+      name_or_id, container_logs=state.container_logs, session_network=network
     )
 
     networks = container.wrapped.network_settings.networks or {}
