@@ -61,7 +61,7 @@ class Container(Wrapper[NativeContainer]):
   def fs(self) -> FileSystem:
     """Higher order file system."""
 
-    return FileSystem(self)
+    return FileSystem(self, container_logs=self._get("container_logs"))
 
   @property
   def proc(self) -> Process:
